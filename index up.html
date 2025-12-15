@@ -1,0 +1,409 @@
+<!DOCTYPE html><html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Composer dengan Bitmask</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 10px; color: #333;
+        }
+        .container {
+            max-width: 1200px; margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 15px; text-align: center;
+        }
+        h1 { font-size: 1.8em; margin-bottom: 8px; line-height: 1.3; }
+        .subtitle { font-size: 0.95em; opacity: 0.9; }
+        .main-content {
+            display: flex; flex-wrap: wrap; padding: 15px; gap: 15px;
+        }
+        .left-panel, .right-panel { flex: 1; min-width: 300px; }
+        .panel {
+            background: white; border-radius: 10px; padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); margin-bottom: 15px;
+        }
+        .panel-title {
+            color: #667eea; border-bottom: 2px solid #667eea;
+            padding-bottom: 8px; margin-bottom: 12px; font-size: 1.1em;
+        }
+        .text-display {
+            width: 100%; min-height: 200px; max-height: 400px;
+            font-family: 'Courier New', monospace; font-size: 14px;
+            padding: 12px; border: 2px solid #ddd; border-radius: 8px;
+            resize: vertical; background: #f9f9f9; white-space: pre-wrap;
+            line-height: 1.4; overflow-y: auto;
+        }
+        .input-field {
+            flex: 1; padding: 10px 12px; border: 2px solid #ddd;
+            border-radius: 8px; font-size: 14px;
+        }
+        .btn {
+            padding: 10px 16px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .bitmask-input-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .info-text {
+            background: #e7f3ff; padding: 10px; border-radius: 8px;
+            margin-top: 12px; font-size: 0.85em; border-left: 4px solid #667eea;
+        }
+        .bitmask-help {
+            background: #fff8e1; padding: 8px 10px; border-radius: 8px;
+            font-size: 0.8em; margin-top: 8px; border-left: 4px solid #ffc107;
+        }/* === VISUALISASI BITMASK === */
+        
+    .preview-insert {
+    background: rgba(161, 228, 136, 0.43);
+    border-radius: 3px;
+}    
+        
+    .toggle-row {
+        display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+        font-size: 0.85em;
+    }
+    .bitmask-visual {
+        font-family: 'Courier New', monospace;
+        font-size: 13px; background: #111; color: #eee;
+        padding: 10px; border-radius: 8px; overflow-x: auto;
+    }
+    .bitmask-visual .idx { color: #999; }
+    .bitmask-visual .bit1 { color: #4caf50; }
+    .bitmask-visual .bit0 { color: #777; }
+    .bitmask-visual .char { color: #03a9f4; }
+
+    footer {
+        text-align: center; padding: 15px; color: white;
+        background: rgba(0,0,0,0.2); font-size: 0.85em;
+    }
+</style>
+
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Character Composer dengan Bitmask</h1>
+        <div class="subtitle">Tempatkan karakter pada posisi tertentu tanpa mengganti karakter yang ada</div>
+    </header><div class="main-content">
+    <div class="left-panel">
+        <div class="panel">
+            <h2 class="panel-title">Teks Utama</h2>
+            <textarea id="textDisplay" class="text-display"></textarea>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-title">Sisipkan Karakter dengan Bitmask</h2>
+            <div class="bitmask-help">
+                Gunakan bitmask biner (1010) atau desimal (10). Bit 1 = posisi sisip.
+            </div>
+            <div class="bitmask-input-container" style="margin-top:8px;">
+                <input id="charInput" class="input-field" placeholder="Karakter">
+                <input id="bitmaskInput" class="input-field" placeholder="Bitmask">
+                <button id="insertBtn" class="btn btn-primary">Sisipkan</button>
+                
+                <button id="stepBtn" class="btn btn-secondary">Step</button>
+                
+                <button id="autoPlayBtn" class="btn btn-secondary">Auto Play</button>
+                <button id="stopPlayBtn" class="btn btn-secondary">Stop</button>
+                
+            </div>
+            <div class="btn-group">
+                <button id="undoBtn" class="btn btn-secondary">Undo</button>
+                <button id="redoBtn" class="btn btn-secondary">Redo</button>
+                <button id="clearBtn" class="btn btn-secondary">Bersihkan</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="panel">
+            <h2 class="panel-title">Visualisasi Bitmask (Real-time)</h2>
+            <div class="toggle-row">
+                <input type="checkbox" id="toggleVisual" checked>
+                <label for="toggleVisual">Tampilkan visualisasi bitmask</label>
+            </div>
+            <div id="bitmaskVisual" class="bitmask-visual"></div>
+            <div class="info-text">
+                Baris pertama: indeks posisi<br>
+                Baris kedua: bitmask (1 / 0)<br>
+                Baris ketiga: karakter teks
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Aplikasi Penyusun Karakter © 2024 | Demo eksperimen bitmask
+</footer>
+
+</div><script>
+const textDisplay = document.getElementById('textDisplay');
+const bitmaskInput = document.getElementById('bitmaskInput');
+const charInput = document.getElementById('charInput');
+const visual = document.getElementById('bitmaskVisual');
+const toggleVisual = document.getElementById('toggleVisual');
+
+let history = [];
+let historyIndex = -1;
+let stepIndex = 0;
+let stepBin = '';
+let stepText = '';
+let stepChar = '';
+let stepActive = false;
+let autoPlayTimer = null;
+let autoPlayDelay = 5; // ms, bisa kamu ubah
+
+function buildFromBitmaskWhenEmpty(bitmaskStr, insertChar, fillerChar = 'F') {
+    if (!bitmaskStr) return '';
+
+    let bitmask;
+
+    if (/^[01]+$/.test(bitmaskStr)) {
+        bitmask = bitmaskStr;
+    } else if (/^\d+$/.test(bitmaskStr)) {
+        bitmask = parseInt(bitmaskStr, 10).toString(2);
+    } else {
+        return '';
+    }
+
+    let result = '';
+    for (let i = 0; i < bitmask.length; i++) {
+        result += bitmask[i] === '1' ? insertChar : fillerChar;
+    }
+
+    return result;
+}
+
+function saveHistory() {
+    history = history.slice(0, historyIndex + 1);
+    history.push(textDisplay.value);
+    historyIndex = history.length - 1;
+}
+
+function renderBitmaskVisual() {
+    if (!toggleVisual.checked) {
+        visual.style.display = 'none';
+        return;
+    }
+    visual.style.display = 'block';
+
+    const text = textDisplay.value;
+    const maskStr = bitmaskInput.value;
+    let bitmask = 0;
+
+    if (/^[01]+$/.test(maskStr)) bitmask = parseInt(maskStr, 2);
+    else if (/^\d+$/.test(maskStr)) bitmask = parseInt(maskStr, 10);
+
+    const len = Math.max(text.length, bitmask.toString(2).length);
+    const bin = bitmask.toString(2).padStart(len, '0');
+
+    let idxLine = '';
+    let bitLine = '';
+    let charLine = '';
+
+    for (let i = 0; i < len; i++) {
+        idxLine += `<span class="idx">${i % 10}</span>`;
+        
+      const isInsert = bin[i] === '1';
+
+bitLine += isInsert
+    ? `<span class="bit1">1</span>`
+    : `<span class="bit0">0</span>`;
+
+if (text[i]) {
+    charLine += isInsert
+        ? `<span class="char preview-insert">${text[i]}</span>`
+        : `<span class="char">${text[i]}</span>`;
+} else {
+    charLine += isInsert
+        ? `<span class="char preview-insert">+</span>`
+        : '<span class="char">·</span>';
+}  
+        
+    /*    bitLine += bin[i] === '1'
+            ? `<span class="bit1">1</span>`
+            : `<span class="bit0">0</span>`;
+        charLine += text[i]
+            ? `<span class="char">${text[i]}</span>`
+            : '<span class="char">·</span>';
+            
+        */    
+            
+    }
+
+    visual.innerHTML = idxLine + '<br>' + bitLine + '<br>' + charLine;
+}
+
+function insertWithBitmask() {
+    const char = charInput.value;
+    if (!char) return;
+
+    const text = textDisplay.value;
+    
+        
+
+// MODE: text kosong → bangun dari bitmask
+if (text.length === 0) {
+    const filler = 'F'; // nanti bisa diganti input user
+    const result = buildFromBitmaskWhenEmpty(
+        bitmaskInput.value,
+        char,
+        filler
+    );
+    textDisplay.value = result;
+    saveHistory();
+    renderBitmaskVisual();
+    return;
+} 
+    
+    
+    
+    
+    let bitmask = 0;
+    const maskStr = bitmaskInput.value;
+
+    if (/^[01]+$/.test(maskStr)) bitmask = parseInt(maskStr, 2);
+    else if (/^\d+$/.test(maskStr)) bitmask = parseInt(maskStr, 10);
+    else return;
+
+    const len = Math.max(text.length, bitmask.toString(2).length);
+    const bin = bitmask.toString(2).padStart(len, '0');
+
+    let result = '';
+    for (let i = 0; i < len; i++) {
+        if (i < text.length) result += text[i];
+        if (bin[i] === '1') result += char;
+    }
+
+    textDisplay.value = result;
+    saveHistory();
+    renderBitmaskVisual();
+}
+
+// events
+textDisplay.addEventListener('input', () => {
+    saveHistory();
+    renderBitmaskVisual();
+});
+
+bitmaskInput.addEventListener('input', renderBitmaskVisual);
+toggleVisual.addEventListener('change', renderBitmaskVisual);
+document.getElementById('insertBtn').addEventListener('click', insertWithBitmask);
+
+document.getElementById('stepBtn').addEventListener('click', stepInsert);
+
+document.getElementById('autoPlayBtn').addEventListener('click', startAutoPlay);
+document.getElementById('stopPlayBtn').addEventListener('click', stopAutoPlay);
+
+document.getElementById('undoBtn').addEventListener('click', () => {
+    if (historyIndex > 0) {
+        historyIndex--;
+        textDisplay.value = history[historyIndex];
+        renderBitmaskVisual();
+    }
+});
+document.getElementById('redoBtn').addEventListener('click', () => {
+    if (historyIndex < history.length - 1) {
+        historyIndex++;
+        textDisplay.value = history[historyIndex];
+        renderBitmaskVisual();
+    }
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+    textDisplay.value = '';
+    saveHistory();
+    renderBitmaskVisual();
+});
+
+function stepInsert() {
+
+
+if (textDisplay.value.length === 0) {
+    stepText = buildFromBitmaskWhenEmpty(
+        bitmaskInput.value,
+        charInput.value,
+        'F'
+    );
+    textDisplay.value = stepText;
+    stepActive = false;
+    saveHistory();
+    renderBitmaskVisual();
+    return;
+}
+
+
+    if (!stepActive) {
+        const maskStr = bitmaskInput.value;
+        if (!/^[01]+$|^\d+$/.test(maskStr)) return;
+
+        const bitmask = /^[01]+$/.test(maskStr)
+            ? parseInt(maskStr, 2)
+            : parseInt(maskStr, 10);
+
+        stepText = textDisplay.value;
+        stepChar = charInput.value || '';
+        stepBin = bitmask.toString(2).padStart(stepText.length, '0');
+
+        stepIndex = 0;
+        stepActive = true;
+    }
+
+    if (stepIndex >= stepBin.length) {
+        stepActive = false;
+        saveHistory();
+        renderBitmaskVisual();
+        stopAutoPlay();
+       
+        return;
+    }
+
+    if (stepBin[stepIndex] === '1') {
+        stepText =
+            stepText.slice(0, stepIndex + 1) +
+            stepChar +
+            stepText.slice(stepIndex + 1);
+        textDisplay.value = stepText;
+    }
+
+    stepIndex++;
+    renderBitmaskVisual();
+}
+
+function startAutoPlay() {
+    if (autoPlayTimer) return;
+
+    autoPlayTimer = setInterval(() => {
+        if (!stepActive && stepIndex !== 0) {
+            stopAutoPlay();
+            return;
+        }
+        stepInsert();
+    }, autoPlayDelay);
+}
+
+function stopAutoPlay() {
+    clearInterval(autoPlayTimer);
+    autoPlayTimer = null;
+}
+
+
+// init
+textDisplay.value = 'Contoh teks';
+bitmaskInput.value = '1010';
+charInput.value = '*';
+saveHistory();
+renderBitmaskVisual();
+</script></body>
+</html>
