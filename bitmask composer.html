@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bitmask Text Editor</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background:#0f172a; color:#e5e7eb; padding:20px }
+    textarea { width:100%; min-height:180px; background:#020617; color:#e5e7eb; border:1px solid #334155; padding:10px; border-radius:8px }
+    input, select, button { background:#020617; color:#e5e7eb; border:1px solid #334155; padding:6px 10px; border-radius:6px }
+    button { cursor:pointer }
+    .row { display:flex; gap:10px; margin:10px 0; flex-wrap:wrap }
+    .panel { background:#020617; border:1px solid #334155; border-radius:10px; padding:12px }
+    .mono { font-family: monospace }
+    .small { font-size:0.9em; opacity:0.85 }
+
+.mono {
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+  </style>
+</head>
+<body>
+
+<h2>Bitmask-based Search & Replace Editor</h2>
+<p class="small">Replace bekerja pada <b>nilai bit</b>: target → 1, selain target → 0</p>
+
+<div class="panel">
+  <textarea id="editor" placeholder="Masukkan teks..."></textarea>
+</div>
+
+<div class="row">
+  <input id="query" placeholder="Target (huruf / kata)" />
+  <select id="mode">
+    <option value="char">Mode Char</option>
+    <option value="word">Mode Word</option>
+  </select>
+  <button onclick="applyMask()">Apply Bitmask</button>
+  <button onclick="undo()">Undo</button>
+  <button onclick="redo()">Redo</button>
+</div>
+
+<div class="panel">
+  <h4>Bitmask Output</h4>
+  <pre id="mask" class="mono"></pre>
+  <button id="copyButton">Salin Output</button>
+
+</div>
+
+<div class="panel">
+  <h4>Statistik</h4>
+  <div id="stats" class="mono small"></div>
+</div>
+
+<script>
+// -------------------- Undo / Redo --------------------
+const history = []
+const future = []
+
+const editor = document.getElementById('editor')
+
+function snapshot() {
+  history.push(editor.value)
+  if (history.length > 100) history.shift()
+  future.length = 0
+}
+
+editor.addEventListener('input', () => {
+  snapshot()
+  updateStats()
+})
+
+function undo() {
+  if (!history.length) return
+  future.push(editor.value)
+  editor.value = history.pop()
+  updateStats()
+}
+
+function redo() {
+  if (!future.length) return
+  history.push(editor.value)
+  editor.value = future.pop()
+  updateStats()
+}
+
+// -------------------- Bitmask Logic --------------------
+document.getElementById('copyButton').addEventListener('click', function() {
+  const text = document.getElementById('mask').innerText; // Ambil teks dari elemen
+  navigator.clipboard.writeText(text) // Salin ke clipboard
+    .then(() => {
+      alert('Teks berhasil disalin!'); // Beri tahu pengguna
+    })
+    .catch(err => {
+      console.error('Gagal menyalin:', err);
+    });
+});
+
+
+function applyMask() {
+  const text = editor.value
+  const q = document.getElementById('query').value
+  const mode = document.getElementById('mode').value
+
+  if (!q) return
+
+  let mask = []
+  let newText = ''
+
+  if (mode === 'char') {
+    for (let c of text) {
+      if (c === q) {
+        mask.push(1)
+        // karakter target DIHILANGKAN
+      } else {
+        mask.push(0)
+        newText += c
+      }
+    }
+  } else {
+    const parts = text.split(/(\s+)/)
+    for (let p of parts) {
+      if (p.trim() === '') {
+        newText += p           // spasi dipertahankan
+      } else if (p === q) {
+        mask.push(1)
+        // kata target DIHILANGKAN
+      } else {
+        mask.push(0)
+        newText += p
+      }
+    }
+  }
+
+  snapshot() // untuk undo
+  editor.value = newText
+  document.getElementById('mask').textContent = mask.join('')
+  updateStats()
+}
+
+
+/* old function
+
+function applyMask() {
+  const text = editor.value
+  const q = document.getElementById('query').value
+  const mode = document.getElementById('mode').value
+
+  if (!q) return
+
+  let mask = []
+
+  if (mode === 'char') {
+    for (let c of text) {
+      mask.push(c === q ? 1 : 0)
+    }
+  } else {
+    const words = text.split(/(\s+)/)
+    for (let w of words) {
+      if (w.trim() === '') {
+        mask.push(w)
+      } else {
+        mask.push(w === q ? '1' : '0')
+      }
+    }
+  }
+
+  document.getElementById('mask').textContent = Array.isArray(mask)
+    ? mask.join(''')
+    : mask
+}
+
+*/
+
+// -------------------- Statistik --------------------
+function updateStats() {
+  const text = editor.value
+  const chars = text.length
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0
+  const lines = text.split(/\n/).length
+
+  document.getElementById('stats').textContent =
+    `chars: ${chars}\nwords: ${words}\nlines: ${lines}`
+}
+
+updateStats()
+</script>
+
+</body>
+</html>
