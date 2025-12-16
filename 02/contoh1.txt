@@ -1,0 +1,7 @@
+Ini adalah file teks contoh untuk link dan card di halaman HTML.
+Anda bisa mengubah isi file ini sesuai kebutuhan.
+
+
+Ini adalah file contoh 1: Informasi Dasar.
+Isi file ini berisi profil dasar tentang proyek HTML sederhana, termasuk tujuan dan struktur folder.
+Proyek ini dibuat untuk mempelajari HTML, CSS, dan JavaScript dengan fitur dark mode dan pencarian.

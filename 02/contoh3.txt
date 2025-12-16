@@ -1,0 +1,11 @@
+Ini adalah file teks contoh untuk link dan card di halaman HTML.
+Anda bisa mengubah isi file ini sesuai kebutuhan.
+
+
+
+Ini adalah file teks contoh untuk link dan card di halaman HTML.
+Anda bisa mengubah isi file ini sesuai kebutuhan.
+
+Ini adalah file contoh 3: Catatan Penting.
+Peringatan: Jangan mengubah struktur file tanpa membackup terlebih dahulu.
+Petunjuk: Untuk menjalankan halaman, buka index.html dengan browser modern (Chrome, Firefox, Edge).

@@ -1,0 +1,8 @@
+Ini adalah file teks contoh untuk link dan card di halaman HTML.
+Anda bisa mengubah isi file ini sesuai kebutuhan.
+
+Ini adalah file contoh 2: Data Tambahan.
+Berikut adalah data statistik contoh:
+- Jumlah pengunjung: 1200 orang
+- Waktu akses rata-rata: 2,5 menit
+Analisis menunjukkan sebagian besar pengguna lebih suka menggunakan mode gelap saat malam hari.

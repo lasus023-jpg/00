@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML dengan Pencarian Halaman + File TXT</title>
+    <style>
+        /* Gaya dasar (sama seperti sebelumnya, tambahan untuk hasil file txt) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            margin-bottom: 1.5rem;
+        }
+        .links-section, .cards-section, .search-results-section {
+            margin-bottom: 3rem;
+        }
+        /* Gaya link */
+        .file-link {
+            display: inline-block;
+            margin: 0.5rem 0;
+            padding: 0.8rem 1.2rem;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        /* Gaya card */
+        .card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        /* Tombol dark mode */
+        #darkModeToggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        /* Bagian pencarian */
+        .search-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        #searchInput {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        /* Hasil pencarian */
+        .result-group {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .result-group h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .result-snippet {
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        /* Efek penyorotan */
+        .highlight {
+            background-color: #ffeb3b;
+            color: #333;
+            padding: 0.1rem 0.2rem;
+            border-radius: 2px;
+        }
+        /* Mode terang (default) */
+        body.light {
+            background: #ffffff;
+            color: #333333;
+        }
+        body.light .card, body.light .search-section, body.light .result-group {
+            background: #f8f9fa;
+        }
+        body.light #darkModeToggle {
+            background: #333333;
+            color: #ffffff;
+        }
+        body.light #searchInput {
+            border-color: #ccc;
+        }
+        /* Mode gelap */
+        body.dark {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        body.dark .card, body.dark .search-section, body.dark .result-group {
+            background: #2d2d2d;
+        }
+        body.dark #darkModeToggle {
+            background: #ffffff;
+            color: #333333;
+        }
+        body.dark .file-link {
+            background: #0056b3;
+        }
+        body.dark #searchInput {
+            background: #3d3d3d;
+            border-color: #555;
+            color: white;
+        }
+        body.dark .highlight {
+            background-color: #ffc107;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body class="light">
+    <button id="darkModeToggle">Ganti ke Dark Mode</button>
+    
+    <div class="container">
+        <h1>Halaman dengan Pencarian Lengkap</h1>
+        
+        <!-- Bagian Pencarian -->
+        <section class="search-section">
+            <h2>Cari di Halaman & File TXT</h2>
+            <input type="text" id="searchInput" placeholder="Cari teks (misal: 'profil', 'statistik', 'peringatan')...">
+            <div id="searchSummary"></div>
+        </section>
+        
+        <!-- Bagian Hasil Pencarian (muncul saat ada input) -->
+        <section class="search-results-section" id="searchResults"></section>
+        
+        <!-- Bagian Link & Card Asli -->
+        <section class="links-section">
+            <h2>Link ke File TXT Contoh</h2>
+            <a href="contoh1.txt" class="file-link" target="_blank">Buka Contoh 1.txt (Informasi Dasar)</a>
+            <a href="contoh2.txt" class="file-link" target="_blank">Buka Contoh 2.txt (Data Tambahan)</a>
+            <a href="contoh3.txt" class="file-link" target="_blank">Buka Contoh 3.txt (Catatan Penting)</a>
+        </section>
+        
+        <section class="cards-section">
+            <h2>Card dengan Link File TXT</h2>
+            <div class="card">
+                <h3>Card 1: Informasi Dasar</h3>
+                <p>Klik link di bawah untuk melihat detail tentang <strong>profil dasar</strong> dalam file teks:</p>
+                <a href="contoh1.txt" class="file-link" target="_blank">Lihat Contoh 1.txt</a>
+            </div>
+            <div class="card">
+                <h3>Card 2: Data Tambahan</h3>
+                <p>File teks ini berisi contoh data <strong>statistik dan analisis</strong> yang lebih rinci:</p>
+                <a href="contoh2.txt" class="file-link" target="_blank">Lihat Contoh 2.txt</a>
+            </div>
+            <div class="card">
+                <h3>Card 3: Catatan Penting</h3>
+                <p>Perhatikan <strong>petunjuk dan peringatan</strong> yang ada di file teks ini:</p>
+                <a href="contoh3.txt" class="file-link" target="_blank">Lihat Contoh 3.txt</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Fungsi Dark Mode (sama seperti sebelumnya)
+        const toggleButton = document.getElementById('darkModeToggle');
+        const body = document.body;
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            body.classList.toggle('light');
+            toggleButton.textContent = body.classList.contains('dark') 
+                ? 'Ganti ke Light Mode' 
+                : 'Ganti ke Dark Mode';
+        });
+
+        // Variabel untuk menyimpan isi file TXT
+        let txtFilesContent = [];
+        const txtFilePaths = ['contoh1.txt', 'contoh2.txt', 'contoh3.txt']; // Daftar file yang akan dibaca
+
+        // Fungsi untuk memuat isi file TXT secara lokal
+        const loadTxtFiles = async () => {
+            for (const path of txtFilePaths) {
+                try {
+                    const response = await fetch(path); // Ambil file dari folder lokal
+                    if (!response.ok) throw new Error('File tidak ditemukan');
+                    const content = await response.text();
+                    txtFilesContent.push({
+                        filename: path,
+                        content: content
+                    });
+                } catch (err) {
+                    console.log(`Gagal memuat ${path}: ${err.message}`);
+                }
+            }
+        };
+
+        // Fungsi untuk menghapus penyorotan
+        const removeHighlights = () => {
+            document.querySelectorAll('.highlight').forEach(el => {
+                el.outerHTML = el.innerHTML;
+            });
+        };
+
+        // Fungsi untuk membuat cuplikan teks yang ditemukan
+        const getSnippet = (text, query) => {
+            const regex = new RegExp(`(.{0,50})(${query})(.{0,50})`, 'gi');
+            const match = regex.exec(text);
+            if (match) {
+                return match[1] + `<span class="highlight">${match[2]}</span>` + match[3];
+            }
+            return '';
+        };
+
+        // Fungsi pencarian UTAMA (halaman + file TXT)
+        const searchAll = (query) => {
+            removeHighlights();
+            const searchResultsEl = document.getElementById('searchResults');
+            const searchSummaryEl = document.getElementById('searchSummary');
+            searchResultsEl.innerHTML = '';
+            searchSummaryEl.textContent = '';
+
+            if (query.trim() === '') return;
+
+            const regex = new RegExp(`(${query})`, 'gi');
+            let totalResults = 0;
+
+            // 1. Pencarian di HALAMAN
+            const searchableElements = document.querySelectorAll('h1, h2, h3, p, .file-link');
+            let pageResults = [];
+            searchableElements.forEach(el => {
+                if (el.textContent.match(regex)) {
+                    el.innerHTML = el.textContent.replace(regex, '<span class="highlight">$1</span>');
+                    pageResults.push({
+                        type: 'halaman',
+                        snippet: getSnippet(el.textContent, query)
+                    });
+                }
+            });
+            totalResults += pageResults.length;
+
+            // 2. Pencarian di FILE TXT
+            let txtResults = [];
+            txtFilesContent.forEach(file => {
+                if (file.content.match(regex)) {
+                    txtResults.push({
+                        type: 'file',
+                        filename: file.filename,
+                        snippet: getSnippet(file.content, query)
+                    });
+                    totalResults += 1; // Hitung 1 hasil per file yang mengandung teks
+                }
+            });
+
+            // Tampilkan ringkasan
+            searchSummaryEl.textContent = totalResults > 0 
+                ? `Ditemukan ${totalResults} hasil untuk "${query}"` 
+                : `Tidak ditemukan hasil untuk "${query}"`;
+
+            // Tampilkan hasil halaman
+            if (pageResults.length > 0) {
+                const pageGroup = document.createElement('div');
+                pageGroup.className = 'result-group';
+                pageGroup.innerHTML = `
+                    <h4>Hasil di Halaman Ini</h4>
+                    ${pageResults.map(res => `<div class="result-snippet">...${res.snippet}...</div>`).join('')}
+                `;
+                searchResultsEl.appendChild(pageGroup);
+            }
+
+            // Tampilkan hasil file TXT
+            if (txtResults.length > 0) {
+                const txtGroup = document.createElement('div');
+                txtGroup.className = 'result-group';
+                txtGroup.innerHTML = `
+                    <h4>Hasil di File TXT</h4>
+                    ${txtResults.map(res => `
+                        <div>
+                            <strong>${res.filename}</strong>:
+                            <div class="result-snippet">...${res.snippet}...</div>
+                            <a href="${res.filename}" class="file-link" style="padding:0.4rem 0.8rem; font-size:0.9rem; margin-top:0.3rem;" target="_blank">Buka file</a>
+                        </div>
+                    `).join('')}
+                `;
+                searchResultsEl.appendChild(txtGroup);
+            }
+        };
+
+        // Muat file TXT saat halaman dimulai, lalu aktifkan pencarian
+        window.addEventListener('load', async () => {
+            await loadTxtFiles();
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                searchAll(e.target.value);
+            });
+        });
+    </script>
+</body>
+</html>
