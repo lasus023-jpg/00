@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager Lokal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        .header {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .search-box .icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 18px;
+        }
+        .file-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .file-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+        .file-card:hover {
+            transform: translateY(-5px);
+        }
+        .file-icon {
+            font-size: 40px;
+            color: #1a73e8;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .file-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .file-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+            height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .no-result {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+            font-size: 16px;
+            display: none;
+        }
+        
+        
+        
+        
+        
+        
+        
+        /* SOROT KATA YANG DITEMUKAN - DITAMBAHKAN */
+.highlight {
+    background-color: #ffeb3b;
+    color: #000;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+/* Mode gelap: sesuaikan warna sorot */
+body.dark-mode .highlight {
+    background-color: #ffc107;
+    color: #1a1a2e;
+}
+/* AKHIR SOROT KATA */
+
+        
+    </style>
+    <!-- Icon dari Font Awesome (agar mudah, bisa diganti dengan SVG lokal jika mau) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1>File Manager Lokal</h1>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cari nama berkas atau kata di dalamnya...">
+            <i class="fas fa-search icon"></i>
+        </div>
+    </div>
+
+    <div class="file-container" id="fileContainer">
+        <!-- Kartu berkas akan ditambahkan di sini via JavaScript -->
+    </div>
+
+    <div class="no-result" id="noResult">
+        
+        
+       <!-- MODAL DETAIL BERKAS - DITAMBAHKAN -->
+<div id="fileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100; padding: 20px;">
+    <div style="background: white; border-radius: 10px; padding: 25px; max-width: 500px; margin: 50px auto; position: relative;">
+        <button id="closeModal" style="position: absolute; top: 15px; right: 15px; border: none; background: none; font-size: 20px; cursor: pointer;">
+            <i class="fas fa-times"></i>
+        </button>
+        <div id="modalIcon" class="file-icon"></div>
+        <h3 id="modalName" style="margin-bottom: 10px; color: #1a73e8;"></h3>
+        <p id="modalContent" style="color: #333; line-height: 1.6;"></p>
+        <a id="modalLink" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #1a73e8; color: white; border-radius: 25px; text-decoration: none;">
+            Buka Berkas Asli
+        </a>
+    </div>
+</div>
+<!-- AKHIR MODAL -->
+ 
+        
+        
+        <i class="fas fa-folder-open fa-3x mb-2" style="color: #ccc;"></i>
+        <p>Tidak ada berkas yang cocok dengan pencarianmu</p>
+    </div>
+
+    <script>
+        // Data berkas contoh (ganti dengan data berkasmu sendiri)
+        const files = [
+            {
+                id: 1,
+                name: "Laporan_Bulanan.pdf",
+                content: "Laporan penjualan bulan Januari 2024, total pendapatan Rp 50.000.000",
+                icon: "fas fa-file-pdf",
+                link: "https://lasus023-jpg.github.io/00/"
+            },
+  
+  
+  
+  /*
+  
+            {
+                id: 2,
+                name: "Daftar_Karyawan.xlsx",
+                content: "Daftar nama karyawan departemen pemasaran, termasuk Andi, Budi, dan Citra",
+                icon: "fas fa-file-excel"
+            },
+            {
+                id: 3,
+                name: "Presentasi_Produk.pptx",
+                content: "Presentasi tentang produk baru 'SmartHome' yang akan diluncurkan bulan depan",
+                icon: "fas fa-file-powerpoint"
+            },
+            {
+                id: 4,
+                name: "Catatan_Pribadi.txt",
+                content: "Catatan tentang rencana liburan ke Bali pada akhir tahun, beli tiket sebelum Mei",
+                icon: "fas fa-file-alt"
+            },
+            {
+                id: 5,
+                name: "Foto_Wisata.jpg",
+                content: "Foto saat mengunjungi pantai Kuta, hari Minggu kemarin",
+                icon: "fas fa-file-image"
+            }
+    */
+    
+    
+    
+        ];
+
+
+// Ubah fungsi renderFiles agar menerima parameter query
+function renderFiles(fileList, query) {
+    const container = document.getElementById('fileContainer');
+    const noResult = document.getElementById('noResult');
+    
+    container.innerHTML = '';
+
+    if (fileList.length === 0) {
+        noResult.style.display = 'block';
+        return;
+    }
+
+    noResult.style.display = 'none';
+    query = query.toLowerCase().trim(); // Siapkan query untuk sorot
+
+    fileList.forEach(file => {
+        const card = document.createElement('a');
+        card.className = 'file-card';
+        card.href = file.link;
+        card.target = "_blank";
+
+        // Fungsi untuk menyorot kata yang dicari
+        function highlightText(text) {
+            if (!query) return text; // Tanpa query, tampilkan teks biasa
+            const regex = new RegExp(`(${query})`, 'gi'); // Cari semua kemunculan
+            return text.replace(regex, '<span class="highlight">$1</span>'); // Sorot dengan span
+        }
+
+        card.innerHTML = `
+            <div class="file-icon">
+                <i class="${file.icon}"></i>
+            </div>
+            <div class="file-name">${highlightText(file.name)}</div> <!-- Sorot nama berkas juga -->
+            <div class="file-desc">${highlightText(file.content)}</div> <!-- Sorot isi berkas -->
+        `;
+        container.appendChild(card);
+    });
+}
+
+
+
+
+
+/*
+        // Fungsi untuk menampilkan semua berkas
+        function renderFiles(fileList) {
+            const container = document.getElementById('fileContainer');
+            const noResult = document.getElementById('noResult');
+            
+            container.innerHTML = '';
+
+            if (fileList.length === 0) {
+                noResult.style.display = 'block';
+                return;
+            }
+
+
+
+            noResult.style.display = 'none';
+            fileList.forEach(file => {
+                const card = document.createElement('a');
+                card.className = 'file-card';
+                
+                card.href = file.link; // Tambah link dari data berkas
+     card.target = "_blank"; // Opsional: buka di tab baru
+                
+                card.innerHTML = `
+                    <div class="file-icon">
+                        <i class="${file.icon}"></i>
+                    </div>
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-desc">${file.content}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+     */
+     
+     
+        // Fungsi pencarian lokal
+        function searchFiles(query) {
+            query = query.toLowerCase().trim();
+            if (!query) return files; // Tampilkan semua jika tidak ada query
+            
+            // Cari di nama berkas DAN isi berkas
+            return files.filter(file => 
+                file.name.toLowerCase().includes(query) || 
+                file.content.toLowerCase().includes(query)
+            );
+        }
+
+
+
+        // Inisialisasi: tampilkan semua berkas dan tambahkan event listener pencarian
+        document.addEventListener('DOMContentLoaded', () => {
+         /*   renderFiles(files, "");    */
+            
+            renderFiles(files, ''); // Tambah  sebagai query awal
+            
+            
+            
+            
+            const searchInput = document.getElementById('searchInput');
+  
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value;
+    const results = searchFiles(query);
+    renderFiles(results, query); // Kirim query ke renderFiles
+});
+
+  /*
+            searchInput.addEventListener('input', (e) => {
+                const results = searchFiles(e.target.value);
+                renderFiles(results, e.target.value);
+            });
+            
+  */          
+  
+  
+  
+ // MODAL DETAIL BERKAS - DITAMBAHKAN
+const fileModal = document.getElementById('fileModal');
+const closeModal = document.getElementById('closeModal');
+const modalIcon = document.getElementById('modalIcon');
+const modalName = document.getElementById('modalName');
+const modalContent = document.getElementById('modalContent');
+const modalLink = document.getElementById('modalLink');
+
+// Buka modal saat klik kata yang disorot
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('highlight')) {
+        const fileCard = e.target.closest('.file-card');
+        const fileName = fileCard.querySelector('.file-name').textContent;
+        const file = files.find(f => f.name === fileName);
+
+        // Isi modal dengan data berkas
+        modalIcon.innerHTML = `<i class="${file.icon}"></i>`;
+        modalName.textContent = file.name;
+        modalContent.innerHTML = highlightText(file.content, e.target.textContent); // Sorot kata di modal
+        modalLink.href = file.link;
+        modalLink.target = "_blank";
+
+        // Tampilkan modal
+        fileModal.style.display = 'block';
+        e.preventDefault(); // Jangan buka link berkas asli langsung
+    }
+});
+
+// Tutup modal
+closeModal.addEventListener('click', () => {
+    fileModal.style.display = 'none';
+});
+
+// Tutup modal saat klik di luar
+window.addEventListener('click', (e) => {
+    if (e.target === fileModal) {
+        fileModal.style.display = 'none';
+    }
+});
+
+// Fungsi sorot untuk modal
+function highlightText(text, query) {
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
+}
+// AKHIR MODAL
+ 
+  
+  
+  
+  
+  
+        });
+        
+        
+        
+        
+        
+        
+        
+    </script>
+</body>
+</html>
