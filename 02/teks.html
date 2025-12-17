@@ -1,23 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Halaman Contoh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kustomisasi Widget Utteranc.es</title>
+  <style>
+    /* Style untuk tata letak halaman */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Kustomisasi Utterances */
+    .utterances {
+      margin-top: 30px;
+      border: 1px solid #ddd; /* Memberikan border untuk pembungkus */
+      border-radius: 8px; /* Sudut melengkung di pembungkus */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tambahkan bayangan */
+    }
+
+    .utterances-frame {
+      width: 100%; /* Supaya iframe menggunakan lebar penuh container */
+      border: none; /* Hilangkan border bawaan iframe */
+      border-radius: inherit; /* Ikuti radius pembungkus */
+    }
+  </style>
 </head>
 <body>
-  <h1>Halaman dengan Komentar</h1>
-  <p>Ini adalah contoh halaman dengan fitur komentar menggunakan Utterances.</p>
+  <div class="container">
+    <h1>Hello, Utterances!</h1>
+    <p>Ini adalah halaman dengan komentar menggunakan widget Utteranc.es. Anda dapat menambahkan komentar di bawah ini.</p>
 
-  <!-- Tempat Komentar -->
-  <section id="comments">
-   <script src="https://utteranc.es/client.js"
-        repo="https://github.com/lasus023-jpg/00"
-        issue-term="pathname"
-        label="tesy kom"
-        theme="dark-blue"
+    <!-- Tambahkan widget Utteranc.es -->
+    <section class="comments">
+      <script src="https://utteranc.es/client.js"
+        repo="lasus023-jpg/00"
+        issue-term="url"
+        theme="github-light"
         crossorigin="anonymous"
         async>
-   </script>
-  </section>
+      </script>
+    </section>
+  </div>
 </body>
 </html>
