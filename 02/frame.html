@@ -106,7 +106,7 @@
 <body>
     <!-- Tombol untuk switch Tema -->
     <div class="theme-switch">
-      <button id="theme-toggle" class="dark"> Judul Buku🌙</button>
+      <button id="theme-toggle" class="dark">🌙</button>
     </div>
 
 <!--    <h4 class='m-5'>Accordion</h4> -->
@@ -160,7 +160,7 @@
     const savedTheme = localStorage.getItem('theme') || 'github-light';
     if (savedTheme === 'github-dark') {
       body.classList.add('dark');
-      themeToggle.textContent = '☀️ Mode Terang';
+      themeToggle.textContent = '☀️Judul Buku';
     }
 
     // Simpan Tema Widget
@@ -174,7 +174,7 @@
       // Toggle antara Tema Gelap/Terang
       if (currentTheme === 'github-light') {
         body.classList.add('dark');
-        themeToggle.textContent = '☀️ Mode Terang';
+        themeToggle.textContent = '☀️Judul Buku';
 
         // Ubah tema Utterances ke github-dark
         currentTheme = 'github-dark';
