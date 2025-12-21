@@ -1,0 +1,10 @@
+"  (ganda)  &quot;  
+ '  (tunggal)  &apos;
+
+
+<strong>Ini konten dari file TXT!</strong>
+Bisa pakai "tanda kutip ganda" dan 'tanda kutip tunggal' langsung loh.
+Juga bisa tambah link: <a href="lainnya.html">Klik di sini</a>
+
+
+tampilkanFileTXT('konten-accordion.txt');
