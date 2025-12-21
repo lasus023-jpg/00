@@ -113,7 +113,7 @@
 
     <h4 class='m-5'>Accordion</h4>
     <div class='container mb-5' data-bs-theme="dark">
-      <div class="accordion" id="accordionExample">
+<div class="accordion" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header bg-dark text-white" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -126,6 +126,23 @@
             </div>
           </div>
         </div>
+
+<div class="accordion" id="customAccordion">
+    <div class="accordion-item bg-dark text-white"> <!-- Apply dark background and light text -->
+        <h2 class="accordion-header">
+            <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCustomOne" aria-expanded="true" aria-controls="collapseCustomOne">
+                Custom Dark Item #1
+            </button>
+        </h2>
+        <div id="collapseCustomOne" class="accordion-collapse collapse show" data-bs-parent="#customAccordion">
+            <div class="accordion-body">
+                The content here is also dark.
+            </div>
+        </div>
+    </div>
+</div>
+
+  
 
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingTwo">
