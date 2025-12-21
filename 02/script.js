@@ -1,5 +1,5 @@
 
-<script>
+//<script>
 // Target elemen accordion-body dari Accordion Item #3
 const accordionBody = document.querySelector('#collapseOne .accordion-body');
 
@@ -25,15 +25,15 @@ function tampilkanFileTXT(namaFile) {
 }
 
 // Panggil fungsi dengan nama file TXTmu
-tampilkanFileTXT('contoh1.txt');
-</script>
+//tampilkanFileTXT('contoh1.txt');
+//</script>
 
 
 
 
 
 
-<script>
+//<script>
 // Target elemen accordion-body dari Accordion Item #3
 const accordionBody = document.querySelector('#collapseTwo .accordion-body');
 
@@ -59,7 +59,7 @@ function tampilkanFileTXT(namaFile) {
 }
 
 // Panggil fungsi dengan nama file TXTmu
-tampilkanFileTXT('contoh2.txt');
-</script>
+//tampilkanFileTXT('contoh2.txt');
+//</script>
 
 
