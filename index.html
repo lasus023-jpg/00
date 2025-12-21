@@ -90,7 +90,11 @@
     }
 </style>
 
-    
+    <!-- ... -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/@waline/client@v3/dist/waline.css"
+  />
 
 </head>
 <body>
@@ -146,6 +150,17 @@
     </div>
 </div>
 
+<!-- ... -->
+  <div id="waline"></div>
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+    init({
+      el: '#waline',
+      serverURL: 'https://your-domain.vercel.app',
+      lang: 'en',
+    });
+  </script>
     
 <footer>
     Aplikasi Penyusun Karakter © 2024 | Demo eksperimen bitmask
