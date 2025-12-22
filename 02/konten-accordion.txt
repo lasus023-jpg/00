@@ -4,7 +4,7 @@
 
 <strong>Ini konten dari file TXT!</strong>
 Bisa pakai "tanda kutip ganda" dan 'tanda kutip tunggal' langsung loh.
-Juga bisa tambah link: <a href="02/pop over (1).html">Klik di sini</a>
+Juga bisa tambah link: <a href="https://lasus023-jpg.github.io/00/02/pop over (1).html">Klik di sini</a>
 
 
 tampilkanFileTXT('konten-accordion.txt');
