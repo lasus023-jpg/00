@@ -1,0 +1,7 @@
+accordionBody.innerHTML = teks;
+    })
+    .catch(error => {
+      
+      accordionBody.textContent = `Error: ${error.message}`;
+    });
+}

@@ -1,0 +1,92 @@
+ /* Style untuk tata letak halaman */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Kustomisasi Utterances */
+    .utterances {
+      margin-top: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .utterances-frame {
+      width: 100%;
+      border: none;
+      border-radius: inherit;
+    }
+
+    /* Tombol Mode Gelap/Terang */
+    .theme-switch {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .theme-switch button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: 2px solid #333;
+      background: transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .theme-switch button:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    /* Gaya untuk Mode Gelap */
+    body.dark {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    .container.dark {
+      background-color: #292929;
+    }
+
+    .theme-switch button.dark {
+      border: 2px solid #f1f1f1;
+      color: #f1f1f1;
+    }
+
+    .theme-switch button.dark:hover {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    .accordion-item.dark .accordion-header button {
+      background-color: #333;
+      color: #f1f1f1;
+    }
+
+    .accordion-item.dark .accordion-body {
+      background-color: #444;
+      color: #f1f1f1;
+    }
+    
