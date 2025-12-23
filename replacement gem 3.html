@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitmask Text Overwriter Pro + Preview</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --accent: #007bff;
+            --secondary: #6c757d;
+            --preview-keep: #28a745;
+            --preview-replace: #dc3545;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #f4f4f9;
+            --card-bg: #2d2d2d;
+            --accent: #3793ff;
+            --preview-keep: #4ade80;
+            --preview-replace: #f87171;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        button:hover { opacity: 0.9; }
+        .btn-secondary { background-color: var(--secondary); }
+        .btn-success { background-color: #28a745; }
+        .btn-info { background-color: #17a2b8; }
+
+        /* Styling Preview */
+        .preview-box {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            border-left: 5px solid var(--accent);
+        }
+
+        .keep { color: var(--preview-keep); font-weight: bold; }
+        .replace { color: var(--preview-replace); text-decoration: line-through; opacity: 0.7; }
+
+        .output-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 6px;
+            color: #333;
+            word-break: break-all;
+            white-space: pre-wrap;
+            min-height: 50px;
+            border: 1px dashed #ccc;
+        }
+
+        [data-theme="dark"] .output-area { background: #3d3d3d; color: #fff; }
+
+        .stats {
+            margin-top: 15px;
+            font-size: 0.85em;
+            display: flex;
+            gap: 15px;
+        }
+
+        .legend { font-size: 0.8em; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Bitmask Overwriter</h2>
+        <button class="theme-toggle" onclick="toggleTheme()">Mode</button>
+    </div>
+
+    <div class="form-group">
+        <label>Mode:</label>
+        <select id="mode" onchange="updatePreview()">
+            <option value="char">Character (Huruf)</option>
+            <option value="word">Word (Kata & Spasi)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Unggah & Teks Target:</label>
+        <input type="file" id="fileInput" accept=".txt" style="margin-bottom: 5px;">
+        <textarea id="targetInput" rows="3" placeholder="Input teks..." oninput="updatePreview()"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Bitmask & Preview Visual:</label>
+        <input type="file" id="bitmaskFileInput" accept=".txt" style="margin-bottom: 5px; font-size: 0.8em;">
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="bitmaskInput" placeholder="101010" oninput="updatePreview()">
+            <button onclick="generateRandomMask()" class="btn-secondary" style="width: 120px; font-size: 12px;">Auto-Gen</button>
+        </div>
+        <div class="legend">
+            <span class="keep">■ = Tetap</span> | <span class="replace">■ = Diganti</span>
+        </div>
+        <div id="previewArea" class="preview-box">Preview akan muncul di sini...</div>
+        <button onclick="downloadBitmask()" class="btn-info" style="margin-top: 5px; padding: 6px; font-size: 11px;">Download Bitmask (.txt)</button>
+    </div>
+
+    <div class="form-group">
+        <label>Pengganti (Replacement):</label>
+        <input type="text" id="replacementInput" placeholder="Contoh: *" oninput="updatePreview()">
+    </div>
+
+    <div class="btn-group">
+        <button onclick="applyBitmask()">Apply Bitmask</button>
+        <button onclick="downloadResult()" class="btn-success">Download Hasil</button>
+    </div>
+
+    <div class="stats" id="statsArea">Statistik: -</div>
+    
+    <label style="margin-top: 20px;">Hasil Akhir:</label>
+    <div class="output-area" id="outputArea"></div>
+</div>
+
+<script>
+    window.onload = () => {
+        ['targetInput', 'bitmaskInput', 'replacementInput', 'mode'].forEach(id => {
+            const val = localStorage.getItem(id);
+            if(val) document.getElementById(id).value = val;
+        });
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        updatePreview();
+    };
+
+    // Handler Unggah
+    document.getElementById('fileInput').addEventListener('change', e => handleUpload(e, 'targetInput'));
+    document.getElementById('bitmaskFileInput').addEventListener('change', e => handleUpload(e, 'bitmaskInput', true));
+
+    function handleUpload(e, targetId, isBitmask = false) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            let content = ev.target.result;
+            if (isBitmask) content = content.replace(/[^01]/g, '');
+            document.getElementById(targetId).value = content;
+            updatePreview();
+        };
+        reader.readAsText(file);
+    }
+
+    // FUNGSI PREVIEW WARNA
+    function updatePreview() {
+        const mode = document.getElementById('mode').value;
+        const target = document.getElementById('targetInput').value;
+        const bitmask = document.getElementById('bitmaskInput').value.trim();
+        const previewArea = document.getElementById('previewArea');
+
+        if (!target) {
+            previewArea.innerHTML = "Masukkan teks untuk melihat preview...";
+            return;
+        }
+
+        let dataArray = (mode === 'char') ? target.split('') : target.split(/(\s+)/).filter(x => x.length > 0);
+        let previewHTML = "";
+
+        // Loop sepanjang data asli, bandingkan dengan bitmask
+        for (let i = 0; i < dataArray.length; i++) {
+            const charOrWord = dataArray[i];
+            const bit = bitmask[i];
+
+            if (bit === '1') {
+                previewHTML += `<span class="replace">${charOrWord}</span>`;
+            } else if (bit === '0') {
+                previewHTML += `<span class="keep">${charOrWord}</span>`;
+            } else {
+                // Jika bitmask lebih pendek dari teks
+                previewHTML += `<span>${charOrWord}</span>`;
+            }
+        }
+
+        previewArea.innerHTML = previewHTML;
+    }
+
+    function generateRandomMask() {
+        const mode = document.getElementById('mode').value;
+        const target = document.getElementById('targetInput').value;
+        if (!target) return;
+        let length = (mode === 'char') ? target.length : target.split(/(\s+)/).filter(x => x.length > 0).length;
+        let mask = "";
+        for (let i = 0; i < length; i++) mask += Math.round(Math.random());
+        document.getElementById('bitmaskInput').value = mask;
+        updatePreview();
+    }
+
+    function applyBitmask() {
+        const mode = document.getElementById('mode').value;
+        const target = document.getElementById('targetInput').value;
+        const bitmask = document.getElementById('bitmaskInput').value.trim();
+        const replacement = document.getElementById('replacementInput').value;
+
+        ['targetInput', 'bitmaskInput', 'replacementInput', 'mode'].forEach(id => {
+            localStorage.setItem(id, document.getElementById(id).value);
+        });
+
+        let dataArray = (mode === 'char') ? target.split('') : target.split(/(\s+)/).filter(x => x.length > 0);
+        let result = [];
+        for (let i = 0; i < bitmask.length; i++) {
+            if (bitmask[i] === '1') result.push(replacement);
+            else result.push(dataArray[i] !== undefined ? dataArray[i] : '?');
+        }
+
+        const finalOutput = result.join('');
+        document.getElementById('outputArea').innerText = finalOutput;
+        document.getElementById('statsArea').innerText = `Statistik: Mask: ${bitmask.length} | Hasil: ${finalOutput.length}`;
+    }
+
+    function downloadBitmask() { saveFile(document.getElementById('bitmaskInput').value, `bitmask_key.txt`); }
+    function downloadResult() { saveFile(document.getElementById('outputArea').innerText, `result.txt`); }
+    function toggleTheme() {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }
+
+    function saveFile(content, fileName) {
+        if(!content) return alert("Konten kosong!");
+        const blob = new Blob([content], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.download = `${fileName.split('.')[0]}_${new Date().getTime()}.txt`;
+        link.href = window.URL.createObjectURL(blob);
+        link.click();
+    }
+</script>
+
+</body>
+</html>
