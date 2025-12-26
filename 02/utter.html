@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kustomisasi Widget Utteranc.es</title>
+  <style>
+    /* Style untuk tata letak halaman */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Kustomisasi Utterances */
+    .utterances {
+      margin-top: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .utterances-frame {
+      width: 100%;
+      border: none;
+      border-radius: inherit;
+    }
+
+    /* Tombol Mode Gelap/Terang */
+    .theme-switch {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .theme-switch button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: 2px solid #333;
+      background: transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .theme-switch button:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    /* Gaya untuk Mode Gelap */
+    body.dark {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    .container.dark {
+      background-color: #292929;
+    }
+
+    .theme-switch button.dark {
+      border: 2px solid #f1f1f1;
+      color: #f1f1f1;
+    }
+
+    .theme-switch button.dark:hover {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="page-container">
+    <h1>Hello, Utterances!</h1>
+    <p>Ini adalah halaman dengan komentar menggunakan widget Utteranc.es. Anda dapat menambahkan komentar di bawah ini.</p>
+
+    <!-- Tombol untuk switch Tema -->
+    <div class="theme-switch">
+      <button id="theme-toggle" class="dark">🌙 Mode Gelap</button>
+    </div>
+
+<button id="quoteCommentBtn">✏️ Komentari Kutipan</button>
+
+<section class="comments" id="utterancesBox" style="display:none;">
+
+    <!-- Tempat Komentar -->
+    
+      <script src="https://utteranc.es/client.js"
+              repo="lasus023-jpg/00"
+              issue-term="pathname"
+              theme="github-light"
+              crossorigin="anonymous"
+              async>
+      </script>
+      
+      
+</section>
+
+  </div>
+
+  <script>
+    // Akses Elemen Dasar
+    const body = document.body;
+    const container = document.getElementById('page-container');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    // Simpan Tema Widget
+    let currentTheme = 'github-light';
+
+    // Fungsi untuk Mengganti Tema
+    function switchTheme() {
+      const commentsSection = document.querySelector('.comments');
+      const oldScript = commentsSection.querySelector('script');
+
+      // Toggle antara Tema Gelap/Terang
+      if (currentTheme === 'github-light') {
+        body.classList.add('dark');
+        container.classList.add('dark');
+        themeToggle.classList.add('light');
+        themeToggle.textContent = '☀️ Mode Terang';
+
+        // Ubah tema Utterances ke github-dark
+        currentTheme = 'github-dark';
+      } else {
+        body.classList.remove('dark');
+        container.classList.remove('dark');
+        themeToggle.classList.remove('light');
+        themeToggle.textContent = '🌙 Mode Gelap';
+
+        // Ubah tema Utterances ke github-light
+        currentTheme = 'github-light';
+      }
+
+      // Ganti widget Utteranc.es dengan tema baru
+      const newScript = document.createElement('script');
+      newScript.src = 'https://utteranc.es/client.js';
+      newScript.setAttribute('repo', 'lasus023-jpg/00');
+      newScript.setAttribute('issue-term', 'pathname');
+      newScript.setAttribute('theme', currentTheme);
+      newScript.crossOrigin = 'anonymous';
+      newScript.async = true;
+
+      // Hapus Skrip Lama dan Tambahkan Skrip Baru
+      commentsSection.removeChild(oldScript);
+      commentsSection.appendChild(newScript);
+    }
+
+    // Tambahkan Event Listener untuk Tombol
+    themeToggle.addEventListener('click', switchTheme);
+  </script>
+
+  
+  <script>
+let selectedText = "";
+
+document.addEventListener("selectionchange", () => {
+  selectedText = window.getSelection().toString().trim();
+});
+</script>
+  
+  <script>
+const commentBtn = document.getElementById("quoteCommentBtn");
+const utterBox = document.getElementById("utterancesBox");
+
+commentBtn.addEventListener("click", () => {
+  if (!selectedText) {
+    alert("Blok teks dulu sebelum berkomentar 🙂");
+    return;
+  }
+
+  utterBox.style.display = "block";
+  utterBox.innerHTML = "";
+
+  const pageTitle = document.title;
+  const quoteKey = `${pageTitle} | ${selectedText.slice(0, 120)}`;
+
+  const script = document.createElement("script");
+  script.src = "https://utteranc.es/client.js";
+  script.setAttribute("repo", "lasus023-jpg/00");
+  script.setAttribute("issue-term", quoteKey);
+  script.setAttribute("label", "kutipan");
+  script.setAttribute("theme", currentTheme);
+  script.crossOrigin = "anonymous";
+  script.async = true;
+
+  utterBox.appendChild(script);
+
+  utterBox.scrollIntoView({ behavior: "smooth" });
+});
+</script>
+  
+</body>
+  </html>
+  
