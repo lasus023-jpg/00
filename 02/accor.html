@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kustomisasi Widget Utteranc.es</title>
+  
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  
+ 
+<style>
+    
+     /* Style untuk tata letak halaman */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Kustomisasi Utterances */
+    .utterances {
+      margin-top: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .utterances-frame {
+      width: 100%;
+      border: none;
+      border-radius: inherit;
+    }
+
+    /* Tombol Mode Gelap/Terang */
+    .theme-switch {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .theme-switch button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: 2px solid #333;
+      background: transparent;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .theme-switch button:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    /* Gaya untuk Mode Gelap */
+    body.dark {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    .container.dark {
+      background-color: #292929;
+    }
+
+    .theme-switch button.dark {
+      border: 2px solid #f1f1f1;
+      color: #f1f1f1;
+    }
+
+    .theme-switch button.dark:hover {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    .accordion-item.dark .accordion-header button {
+      background-color: #333;
+      color: #f1f1f1;
+    }
+
+    .accordion-item.dark .accordion-body {
+      background-color: #444;
+      color: #f1f1f1;
+    }
+    
+    
+</style>
+  
+</head>
+
+
+<body>
+    <!-- Tombol untuk switch Tema -->
+    <div class="theme-switch" data-bs-theme="dark">
+      <button id="theme-toggle" class="dark">🌙 Mode Gelap</button>
+    </div>
+
+<!--
+
+    <h4 class='m-5'>Accordion</h4>
+    
+-->  <p></p>  
+    
+    <div class='container mb-5' data-bs-theme="dark">
+<div class="accordion" id="accordionExample">
+        
+        
+        <!-- accor 1 di bawah ini -->
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header bg-dark text-white" id="headingSatu">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSatu" aria-expanded="false" aria-controls="collapseSatu">
+              Accordion Item #1
+            </button>
+          </h2>
+          
+          
+     <div id="collapseSatu" class="accordion-collapse collapse" aria-labelledby="headingSatu" data-bs-parent="#accordionExample">
+  <div class="accordion-body">
+   test
+    Contoh lain: Dia berkata, &quot;Saya suka kode JS karena bisa menggunakan &apos;fungsi&apos; dengan mudah!&quot;
+  </div>
+</div>       
+</div>
+ 
+    
+   <!-- accor 1 berakhir di sini -->    
+        
+        
+ <!--
+ 
+ Langkah-langkah menambahkan accordion item baru:
+ 
+1. Duplikasi struktur HTML: Salin seluruh blok kode  div class="accordion-item"  dari salah satu item sebelumnya (misalnya item 2) dan tempelkan setelah item 2 tersebut.
+
+2. Ganti ID dan  data-bs-target :
+
+- Pada elemen  <h2 class="accordion-header"> , ubah  id="headingDua"  menjadi  id="headingTiga"  (atau nama lain yang unik).
+
+- Pada elemen  <button class="accordion-button"> , ubah  data-bs-target="#collapseDua"  menjadi  data-bs-target="#collapseTiga" .
+
+- Pada elemen  <div id="collapseDua" class="accordion-collapse collapse"> , ubah  id="collapseDua"  menjadi  id="collapseTiga"  dan  aria-labelledby="headingDua"  menjadi  aria-labelledby="headingTiga" .
+
+ 
+ 
+ -->       
+ 
+ <!-- accor 2 mulai dari sini -->
+        
+      <div class="accordion-item">
+          <h2 class="accordion-header bg-dark text-white" id="headingDua">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDua" aria-expanded="false" aria-controls="collapseDua">
+              Accordion Item #2
+            </button>
+          </h2>
+          
+          
+     <div id="collapseDua" class="accordion-collapse collapse" aria-labelledby="headingDua" data-bs-parent="#accordionExample">
+  <div class="accordion-body">
+   test
+    CONTOH 2 &apos;fungsi&apos; dengan mudah!&quot;
+  </div>
+</div>       
+</div>
+    
+ <!-- accor 2 berakhir di sini -->           
+        
+        
+        
+        
+<!-- batas akhir div accordion -->   
+      </div>
+    </div>
+    
+    
+    
+    
+    
+    <script>
+        
+      // Akses Elemen Dasar
+    const body = document.body;
+    const themeToggle = document.getElementById('theme-toggle');
+
+    // Ambil Tema Awal dari LocalStorage
+    const savedTheme = localStorage.getItem('theme') || 'github-light';
+    if (savedTheme === 'github-dark') {
+      body.classList.add('dark');
+      themeToggle.textContent = '☀️ Mode Terang';
+    }
+
+    // Simpan Tema Widget
+    let currentTheme = savedTheme;
+
+    // Fungsi untuk Mengganti Tema
+    function switchTheme() {
+      const commentsSection = document.querySelector('.comments');
+      const oldScript = commentsSection.querySelector('script');
+
+      // Toggle antara Tema Gelap/Terang
+      if (currentTheme === 'github-light') {
+        body.classList.add('dark');
+        themeToggle.textContent = '☀️ Mode Terang';
+
+        // Ubah tema Utterances ke github-dark
+        currentTheme = 'github-dark';
+      } else {
+        body.classList.remove('dark');
+        themeToggle.textContent = '🌙 Mode Gelap';
+
+        // Ubah tema Utterances ke github-light
+        currentTheme = 'github-light';
+      }
+
+      // Ganti widget Utteranc.es dengan tema baru
+      const newScript = document.createElement('script');
+      newScript.src = 'https://utteranc.es/client.js';
+      newScript.setAttribute('repo', 'lasus023-jpg/00');
+      newScript.setAttribute('issue-term', 'pathname');
+      newScript.setAttribute('theme', currentTheme);
+      newScript.crossOrigin = 'anonymous';
+      newScript.async = true;
+
+      // Simpan Tema ke LocalStorage
+      localStorage.setItem('theme', currentTheme);
+
+      // Hapus Skrip Lama dan Tambahkan Skrip Baru
+      commentsSection.removeChild(oldScript);
+      commentsSection.appendChild(newScript);
+    }
+
+    // Tambahkan Event Listener untuk Tombol
+    themeToggle.addEventListener('click', switchTheme);
+    
+     
+    
+    
+    
+    
+// Accordion 1
+
+const accordionBody = document.querySelector('#collapseSatu .accordion-body');
+
+
+function tampilkanFileTXT(namaFile) {
+  
+  fetch(namaFile)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("File tidak ditemukan atau gagal diambil");
+      }
+      return response.text(); 
+    })
+    .then(teks => {
+     
+      accordionBody.innerHTML = teks;
+    })
+    .catch(error => {
+      
+      accordionBody.textContent = `Error: ${error.message}`;
+    });
+}
+
+tampilkanFileTXT('file1.txt');
+
+
+
+
+// Accordion 2 → accordionBody2, #collapseDua, tampilkanFileTXT2
+
+const accordionBody2 = document.querySelector('#collapseDua .accordion-body');
+function tampilkanFileTXT2(namaFile) {  
+  fetch(namaFile)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("File tidak ditemukan atau gagal diambil");
+      }
+      return response.text(); 
+    })
+    .then(teks => {
+     
+      accordionBody2.innerHTML = teks;
+    })
+    .catch(error => {
+      
+      accordionBody2.textContent = `Error: ${error.message}`;
+    });
+}
+
+tampilkanFileTXT2('konten-accordion.txt');  
+        
+    </script>
+    
+    
+    
+    
+    <script src="script.js"></script>
+
+    <!-- Tempat Komentar -->
+   <section class="comments">
+      <script src="https://utteranc.es/client.js"
+              repo="lasus023-jpg/00"
+              issue-term="pathname"
+              theme="github-light"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+    
+ 
+
+</body>
+</html>
