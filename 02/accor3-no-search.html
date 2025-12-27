@@ -127,6 +127,11 @@ body.dark mark {
     #searchInput { 
     display: none; }
     
+    
+    .modal-body {
+  padding-bottom: 2rem;
+} /* lebih nyaman ngetik di mobile */
+    
 </style>
   
 </head>
@@ -152,6 +157,12 @@ body.dark mark {
              placeholder="Cari teks..."
              aria-label="Search">
     </form>
+    
+    <button class="btn btn-sm btn-outline-light ms-2"
+        data-bs-toggle="modal"
+        data-bs-target="#commentModal">
+  💬
+</button>
 
     <!-- Dark mode button (dipindah ke navbar) -->
     <button id="theme-toggle"
@@ -259,6 +270,53 @@ body.dark mark {
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="commentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">💬 Komentar</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- SECTION KOMENTAR -->
+        <section class="comments">
+          <script src="https://utteranc.es/client.js"
+                  repo="lasus023-jpg/00"
+                  issue-term="pathname"
+                  theme="github-light"
+                  crossorigin="anonymous"
+                  async>
+          </script>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- menjelang </body> -->
+
+
+
+<!-- modal box yg muncul auto ke kotak komen -->
+<script>
+document.getElementById('commentModal')
+  .addEventListener('shown.bs.modal', () => {
+    document.querySelector('.utterances-frame')?.scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+</script>
+
+
     
     <!-- fungsi Toast helper -->
     
