@@ -172,58 +172,68 @@ body.dark mark {
         
         <!-- accor 1 di bawah ini -->
         
-        <div class="accordion-item">
-          <h2 class="accordion-header bg-dark text-white" id="headingSatu">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSatu" aria-expanded="false" aria-controls="collapseSatu">
-              Accordion Item #1
-            </button>
-          </h2>
-          
-          
-     <div id="collapseSatu" class="accordion-collapse collapse" aria-labelledby="headingSatu" data-bs-parent="#accordionExample">
-  <div class="accordion-body">
-     </div>
-</div>       
-</div>
- 
-    
-   <!-- accor 1 berakhir di sini -->    
-           
- 
- <!-- accor 2 mulai dari sini -->
-        
-      <div class="accordion-item">
-          <h2 class="accordion-header bg-dark text-white" id="headingDua">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDua" aria-expanded="false" aria-controls="collapseDua">
-              Accordion Item #2
-            </button>
-          </h2>
-          
-          
-     <div id="collapseDua" class="accordion-collapse collapse" aria-labelledby="headingDua" data-bs-parent="#accordionExample">
-  <div class="accordion-body">
-  
-  </div>
-</div>       
-</div>
-    
- <!-- accor 2 berakhir di sini -->           
-        
-  <div class="accordion-item">
-          <h2 class="accordion-header bg-dark text-white" id="headingTiga">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTiga" aria-expanded="false" aria-controls="collapseTiga">
-              Accordion Item #3
-            </button>
-          </h2>
-          
-          
-     <div id="collapseTiga" class="accordion-collapse collapse" aria-labelledby="headingTiga" data-bs-parent="#accordionExample">
-  <div class="accordion-body">
+       <div class="accordion-item" data-file="profile.txt">
+  <h2 class="accordion-header" id="headingSatu">
+    <button class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseSatu">
+      Bab 1 — Profil
+    </button>
+  </h2>
+
+  <div id="collapseSatu"
+       class="accordion-collapse collapse"
+       data-bs-parent="#accordionExample">
+    <div class="accordion-body">
+      Memuat konten…
     </div>
-</div>       
+  </div>
 </div>
-          
-        
+ 
+    
+   <!-- accor 2 di bawah ini -->    
+     
+     <div class="accordion-item" data-file="Struktur Plot.txt">
+  <h2 class="accordion-header" id="headingDua">
+    <button class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseDua">
+      Bab 2 — Seteruk toer pelot
+    </button>
+  </h2>
+
+  <div id="collapseDua"
+       class="accordion-collapse collapse"
+       data-bs-parent="#accordionExample">
+    <div class="accordion-body">
+      Memuat konten…
+    </div>
+  </div>
+</div>      
+
+             <!-- accor 3 di bawah ini -->
+
+ <div class="accordion-item" data-file="naya.txt">
+  <h2 class="accordion-header" id="heading-3">
+    <button class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapse-3">
+      Bab 3 — naya
+    </button>
+  </h2>
+
+  <div id="collapse-3"
+       class="accordion-collapse collapse"
+       data-bs-parent="#accordionExample">
+    <div class="accordion-body">
+      Memuat konten…
+    </div>
+  </div>
+</div>
+
         
 <!-- batas akhir div accordion -->   
       </div>
@@ -420,82 +430,47 @@ showResultCount(matchCount);
     // Tambahkan Event Listener untuk Tombol
     themeToggle.addEventListener('click', switchTheme);
     
-   
-    
-     </script>
-    
-    
-    <script>
-    
-<!-- fungsi JS Accordion 1 -->
-
-const accordionBody = document.querySelector('#collapseSatu .accordion-body');
-function tampilkanFileTXT(namaFile) {  
-  fetch(namaFile)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("File tidak ditemukan atau gagal diambil");
-      }
-      return response.text(); 
-    })
-    .then(teks => {
-      accordionBody.innerHTML = teks;
-    })
-    .catch(error => {
-      accordionBody.textContent = `Error: ${error.message}`;
-    });
-}
-tampilkanFileTXT('profile.txt');
-
-
-<!-- fungsi JS Accordion 2 -->
-
-const accordionBody2 = document.querySelector('#collapseDua .accordion-body');
-function tampilkanFileTXT2(namaFile) {  
-  fetch(namaFile)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("File tidak ditemukan atau gagal diambil");
-      }
-      return response.text(); 
-    })
-    .then(teks => {
-      accordionBody2.innerHTML = teks;
-    })
-    .catch(error => {
-      accordionBody2.textContent = `Error: ${error.message}`;
-    });
-}
-tampilkanFileTXT2('Struktur Plot.txt'); 
-
- 
-        
-<!-- fungsi JS Accordion 3 -->  
-  
- const accordionBody3 = document.querySelector('#collapseTiga .accordion-body');
-function tampilkanFileTXT3(namaFile) {  
-  fetch(namaFile)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("File tidak ditemukan atau gagal diambil");
-      }
-      return response.text(); 
-    })
-    .then(teks => {
-      accordionBody3.innerHTML = teks;
-    })
-    .catch(error => {
-      accordionBody3.textContent = `Error: ${error.message}`;
-    });
-}
-tampilkanFileTXT3('naya.txt');  
- 
   
     
     </script>
     
     
     
+    <!-- fungsi fetch body akor -->
+     
+    
+    <script>
+async function loadAccordionContent(item) {
+  const file = item.dataset.file;
+  const body = item.querySelector('.accordion-body');
+
+  if (!file || body.dataset.loaded) return;
+
+  try {
+    const response = await fetch(file);
+    if (!response.ok) throw new Error('File tidak ditemukan');
+
+    const text = await response.text();
+    body.innerHTML = text;
+    body.dataset.loaded = 'true'; // cache
+  } catch (err) {
+    body.textContent = `Error: ${err.message}`;
+  }
+}
+
+</script>
+
+<!-- trigger Akordion (jika dihapus body kosong) -->
+
+<script>
+document
+  .getElementById('accordionExample')
+  .addEventListener('shown.bs.collapse', function (e) {
+    const item = e.target.closest('.accordion-item');
+    loadAccordionContent(item);
+  });
+</script>
+
 
 
     <!-- Tempat Komentar -->
@@ -512,4 +487,4 @@ tampilkanFileTXT3('naya.txt');
  
 
 </body>
-  </html>
+</html>
