@@ -127,6 +127,7 @@
 
         .legend { font-size: 0.8em; margin-top: 5px; }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
 </head>
 <body>
 
@@ -179,7 +180,9 @@
     <label style="margin-top: 20px;">Hasil Akhir:</label>
     <div class="output-area" id="outputArea"></div>
 </div>
-
+<div id="waline"></div> 
+    <script type="module"> import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js'; init({ el: '#waline', serverURL: 'https://comment9.vercel.app', lang: 'en', }); </script>
+  // js script
 <script>
     window.onload = () => {
         ['targetInput', 'bitmaskInput', 'replacementInput', 'mode'].forEach(id => {
