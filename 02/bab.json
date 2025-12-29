@@ -1,0 +1,17 @@
+[
+  { "id": "bab-1", 
+  "judul": "Profil", 
+  "file": "profile.txt" },
+  
+  
+  { "id": "bab-2", "judul": "Struktur Plot", "file": "struktur-plot.txt" },
+  
+  { "id": "bab-3", "judul": "naya", "file": "naya.txt" },
+  
+  { "id": "bab-4", "judul": "format", "file": "format.txt" }
+  
+  
+  
+  
+]
+
