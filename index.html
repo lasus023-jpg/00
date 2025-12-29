@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitmask Text Overwriter Pro + Preview</title>
+    <title>Bitmask Text Overwriter</title>
+   
+   
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  
+  
+   
+   
     <style>
         :root {
             --bg-color: #f4f4f9;
@@ -36,7 +46,7 @@
 
         .container {
             width: 100%;
-            max-width: 700px;
+            max-width: 850px;
             background: var(--card-bg);
             padding: 25px;
             border-radius: 12px;
@@ -127,15 +137,29 @@
 
         .legend { font-size: 0.8em; margin-top: 5px; }
     </style>
+    
+    
+    
+    
     <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+    
+    
+    
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h2>Bitmask Overwriter</h2>
-        <button class="theme-toggle" onclick="toggleTheme()">Mode</button>
+        <h2 data-bs-toggle="modal"
+        data-bs-target="#commentModal">Bitplacer Text</h2><p>
+        <button class="theme-toggle" onclick="toggleTheme()">Mode</button></p>
+        
+        
+        
     </div>
+    
+    
+    
 
     <div class="form-group">
         <label>Mode:</label>
@@ -169,6 +193,7 @@
         <label>Pengganti (Replacement):</label>
         <input type="text" id="replacementInput" placeholder="Contoh: *" oninput="updatePreview()">
     </div>
+    
 
     <div class="btn-group">
         <button onclick="applyBitmask()">Apply Bitmask</button>
@@ -179,11 +204,70 @@
     
     <label style="margin-top: 20px;">Hasil Akhir:</label>
     <div class="output-area" id="outputArea"></div>
+    <p></p>
+    <button
+        data-bs-toggle="modal"
+        data-bs-target="#commentModal">
+  💬
+</button>
+    
+    
 </div>
-<div id="waline"></div> 
-    <script type="module"> import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js'; init({ el: '#waline', serverURL: 'https://comment9.vercel.app', lang: 'en', }); </script>
-  // js script
+
+
+
+<div class="modal fade" id="commentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">💬 Komentar</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- SECTION KOMENTAR -->
+      <div id="waline"></div>   
+    
+
+    <!-- js waline -->
+
+    <script type="module"> import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js'; init({ el: '#waline', serverURL: 'https://wl-c.vercel.app', lang: 'en', }); </script>
+  
+  <!--  -->
+      
+      
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    
+  
+<!-- modal yg muncul auto ke kotak komen -->
 <script>
+document.getElementById('commentModal')
+  .addEventListener('shown.bs.modal', () => {
+    document.querySelector('.utterances-frame')?.scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+</script>
+  
+<script>
+    
+    
+    
+    
+    
+    
+    <!-- bitmask doom-->
+    
     window.onload = () => {
         ['targetInput', 'bitmaskInput', 'replacementInput', 'mode'].forEach(id => {
             const val = localStorage.getItem(id);
