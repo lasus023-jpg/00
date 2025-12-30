@@ -12,7 +12,10 @@
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   
- 
+    <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+    
+    
+  
 <style>
     
      /* Style untuk tata letak halaman */
@@ -750,7 +753,10 @@ function renderPagination(container, pages) {
               async>
       </script>
     </section> -->
-   
+<div id="waline"></div>
+  
+       <script type="module"> import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js'; init({ el: '#waline', serverURL: 'https://wl-c.vercel.app', lang: 'en', }); </script>
+  
  
 
 </body>
