@@ -142,6 +142,13 @@ body.dark mark {
   box-shadow: 0 4px 16px rgba(0,0,0,.15);
 }
     
+.accordion-body {
+  line-height: 1.8;
+}
+
+.accordion-body button {
+  min-width: 12px;
+        }
     
 </style>
 
@@ -650,7 +657,86 @@ document
   });
 </script>
 
+<script>
+  
+  /* pagination */
+  
+  
+  function paginateText(text, options = {}) {
+  const charsPerPage = options.charsPerPage || 0;
 
+  const paragraphs = text
+    .split(/\n{2,}/)
+    .map(p => p.trim())
+    .filter(Boolean);
+
+  const pages = [];
+  let buffer = '';
+
+  paragraphs.forEach(p => {
+    if ((buffer + p).length > charsPerPage) {
+      pages.push(buffer);
+      buffer = p + '\n\n';
+    } else {
+      buffer += p + '\n\n';
+    }
+  });
+
+  if (buffer) pages.push(buffer);
+  return pages;
+}
+
+
+
+
+/* render */
+
+function renderPagination(container, pages) {
+  let current = 0;
+
+  const content = document.createElement('div');
+  const nav = document.createElement('div');
+
+  nav.className = 'd-flex justify-content-between align-items-center my-3';
+
+  const btnPrev = document.createElement('button');
+  btnPrev.textContent = '⬅️';
+  btnPrev.className = 'btn btn-sm btn-outline-secondary';
+
+  const btnNext = document.createElement('button');
+  btnNext.textContent = '➡️';
+  btnNext.className = 'btn btn-sm btn-outline-secondary';
+
+  const info = document.createElement('span');
+
+  function update() {
+    content.innerHTML = pages[current].replace(/\n/g, '<br>');
+    info.textContent = `${current + 1} / ${pages.length}`;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === pages.length - 1;
+  }
+
+  btnPrev.onclick = () => {
+    if (current > 0) {
+      current--;
+      update();
+    }
+  };
+
+  btnNext.onclick = () => {
+    if (current < pages.length - 1) {
+      current++;
+      update();
+    }
+  };
+
+  nav.append(btnPrev, info, btnNext);
+  container.innerHTML = '🔎';
+  container.append(content, nav);
+
+  update();
+  }
+</script>
 
     <!-- halaman Komentar -->
   <!--  <section class="comments">
