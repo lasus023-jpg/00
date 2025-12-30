@@ -211,6 +211,10 @@ body.dark mark {
     <button class="btn btn-sm btn-outline-light ms-2" id="darkModeToggle" onclick="toggleDarkMode()">
             <i class="bi bi-moon-fill"></i>
         </button>
+     
+<button class ="btn btn-sm btn-outline-light ms-2"id="stabiloBtn"><i class="bi bi-clipboard-check-fill content">
+            
+</i>
 
 
   </div>
@@ -754,8 +758,52 @@ function renderPagination(container, pages) {
       </script>
     </section> -->
 <div id="waline"></div>
-  
-       <script type="module"> import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js'; init({ el: '#waline', serverURL: 'https://wl-c.vercel.app', lang: 'en', }); </script>
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+    init({
+      el: '#waline',
+      serverURL: 'https://wl-c.vercel.app',
+      lang: 'en',
+    });
+  </script>
+    
+    <script>
+let selectedText = "";
+
+document.addEventListener("selectionchange", () => {
+  selectedText = window.getSelection().toString().trim();
+});
+
+document.getElementById("stabiloBtn").addEventListener("click", () => {
+  if (!selectedText) {
+    alert("Blok teks dulu sebelum menekan STABILO 🙂");
+    return;
+  }
+
+  const waline = document.getElementById("waline");
+  waline.style.display = "block";
+
+  const pageTitle = document.title;
+  const pageLink = location.href;
+
+  setTimeout(() => {
+    const textarea = waline.querySelector("textarea");
+    if (textarea) {
+      textarea.value =
+`${pageTitle}
+🔗${pageLink}
+
+> ${selectedText}
+
+`;
+      textarea.focus();
+    }
+  }, 500);
+
+  waline.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+</script>
   
  
 
