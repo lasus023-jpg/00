@@ -637,8 +637,10 @@ async function loadAccordionContent(item) {
     if (!response.ok) throw new Error('File tidak ditemukan');
 
     const text = await response.text();
-    body.innerHTML = text;
-    body.dataset.loaded = 'true'; // cache
+    
+    const pages = paginateText(text, { charsPerPage: 800 });
+renderPagination(body, pages);
+body.dataset.loaded = 'true' // cache
   } catch (err) {
     body.textContent = `Error: ${err.message}`;
   }
