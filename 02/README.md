@@ -1,3 +1,4 @@
-'
-“Font: Merriweather (SIL Open Font License)”
-'
+just:
+
+> Font: Merriweather (SIL Open Font License)
+
