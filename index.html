@@ -194,22 +194,30 @@
         <input type="text" id="replacementInput" placeholder="Contoh: *" oninput="updatePreview()">
     </div>
     
-
-    <div class="btn-group">
-        <button onclick="applyBitmask()">Apply Bitmask</button>
-        <button onclick="downloadResult()" class="btn-success">Download Hasil</button>
-    </div>
-
-    <div class="stats" id="statsArea">Statistik: -</div>
+     <div class="stats" id="statsArea">Statistik: -</div>
     
     <label style="margin-top: 20px;">Hasil Akhir:</label>
     <div class="output-area" id="outputArea"></div>
-    <p></p>
+    
+   <p></p>
+    
+<div class="btn-group">
+    <button onclick="applyBitmask()">Apply Bitmask</button>
+    <button onclick="downloadResult()" class="btn-success">Download Hasil</button>
+</div>
+<button onclick="moveResultToInput()" class="btn-info" style="margin-bottom: 15px; background-color: #6f42c1; border: none;">
+    ↑ Gunakan Hasil sebagai Input Baru
+</button>
+
+
+    
     <button
         data-bs-toggle="modal"
         data-bs-target="#commentModal">
   💬
 </button>
+    
+    
     
     
 </div>
@@ -261,7 +269,28 @@ document.getElementById('commentModal')
   
 <script>
     
-    
+    <!-- add iteration -->
+    function moveResultToInput() {
+    // 1. Ambil teks dari area hasil
+    const finalResult = document.getElementById('outputArea').innerText;
+
+    // 2. Pastikan ada teks yang bisa dipindahkan
+    if (!finalResult || finalResult === "") {
+        alert("Belum ada hasil untuk dipindahkan!");
+        return;
+    }
+
+    // 3. Masukkan teks tersebut ke dalam kotak Target Input
+    document.getElementById('targetInput').value = finalResult;
+
+    // 4. Jalankan update preview agar warna preview sinkron dengan teks baru
+    updatePreview();
+
+    // 5. Beri notifikasi kecil atau scroll ke atas agar pengguna tahu teks sudah pindah
+    alert("Hasil telah dipindahkan ke Teks Target!");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
     
     
     
