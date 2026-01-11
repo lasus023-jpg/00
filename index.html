@@ -368,26 +368,36 @@ document.getElementById('commentModal')
     }
 
     function applyBitmask() {
-        const mode = document.getElementById('mode').value;
-        const target = document.getElementById('targetInput').value;
-        const bitmask = document.getElementById('bitmaskInput').value.trim();
-        const replacement = document.getElementById('replacementInput').value;
+    const mode = document.getElementById('mode').value;
+    const target = document.getElementById('targetInput').value;
+    const bitmask = document.getElementById('bitmaskInput').value.trim();
+    const replacement = document.getElementById('replacementInput').value;
 
-        ['targetInput', 'bitmaskInput', 'replacementInput', 'mode'].forEach(id => {
-            localStorage.setItem(id, document.getElementById(id).value);
-        });
+    ['targetInput', 'bitmaskInput', 'replacementInput', 'mode'].forEach(id => {
+        localStorage.setItem(id, document.getElementById(id).value);
+    });
 
-        let dataArray = (mode === 'char') ? target.split('') : target.split(/(\s+)/).filter(x => x.length > 0);
-        let result = [];
-        for (let i = 0; i < bitmask.length; i++) {
-            if (bitmask[i] === '1') result.push(replacement);
-            else result.push(dataArray[i] !== undefined ? dataArray[i] : '?');
+    let dataArray =
+        (mode === 'char')
+            ? target.split('')
+            : target.split(/(\s+)/).filter(x => x.length > 0);
+
+    let result = [];
+
+    for (let i = 0; i < dataArray.length; i++) {
+        if (bitmask[i] === '1') {
+            result.push(replacement);
+        } else {
+            result.push(dataArray[i]);
         }
-
-        const finalOutput = result.join('');
-        document.getElementById('outputArea').innerText = finalOutput;
-        document.getElementById('statsArea').innerText = `Statistik: Mask: ${bitmask.length} | Hasil: ${finalOutput.length}`;
     }
+
+    const finalOutput = result.join('');
+    document.getElementById('outputArea').innerText = finalOutput;
+
+    document.getElementById('statsArea').innerText =
+        `Statistik: Teks: ${dataArray.length} | Mask: ${bitmask.length} | Hasil: ${finalOutput.length}`;
+}
 
     function downloadBitmask() { saveFile(document.getElementById('bitmaskInput').value, `bitmask_key.txt`); }
     function downloadResult() { saveFile(document.getElementById('outputArea').innerText, `result.txt`); }
@@ -410,4 +420,5 @@ document.getElementById('commentModal')
     
 
 </body>
-</html>
+        </html>
+    
