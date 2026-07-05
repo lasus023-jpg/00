@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Konversi Basis Custom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #fafafa;
+            font-family: inherit;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+        }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+        
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+        }
+        
+        .btn-secondary:active {
+            background: #e0e0e0;
+            transform: scale(0.97);
+        }
+        
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 2px dashed #e0e0e0;
+            min-height: 50px;
+        }
+        
+        .result-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .result-value {
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            color: #333;
+            margin-top: 4px;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1565c0;
+            margin: 12px 0;
+        }
+        
+        .error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            
+            input, textarea {
+                font-size: 15px;
+                padding: 10px 12px;
+            }
+            
+            .result-value {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔢 Konversi Basis Custom</h1>
+        <p class="subtitle">Ubah bilangan dengan karakter sesuai keinginan</p>
+        
+        <div class="form-group">
+            <label>Basis Sumber (Desimal)</label>
+            <input type="number" id="sourceBase" value="10" min="2" max="36">
+        </div>
+        
+        <div class="form-group">
+            <label>Karakter Custom (pisahkan dengan koma)</label>
+            <input type="text" id="customChars" value="g,j,b,k,l,d,r,a,y,o" placeholder="g,j,b,k,l,d,r,a,y,o">
+            <div class="char-counter" id="charCount">10 karakter</div>
+        </div>
+        
+        <div class="form-group">
+            <label>Basis Tujuan</label>
+            <input type="number" id="targetBase" value="10" min="2" max="36">
+        </div>
+        
+        <div class="form-group">
+            <label>Angka yang akan dikonversi</label>
+            <input type="text" id="numberInput" placeholder="Masukkan angka..." value="123">
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn-primary" id="convertBtn">🔄 Konversi</button>
+            <button class="btn-secondary" id="swapBtn">⇄ Tukar</button>
+            <button class="btn-secondary" id="clearBtn">✕ Bersihkan</button>
+            <button class="btn-secondary" id="exampleBtn">📝 Contoh</button>
+        </div>
+        
+        <div class="result-box" id="resultBox">
+            <div class="result-label">Hasil Konversi</div>
+            <div class="result-value" id="resultValue">-</div>
+        </div>
+        
+        <div class="result-box" id="resultBox2" style="display:none;">
+            <div class="result-label">Representasi Custom</div>
+            <div class="result-value" id="resultValue2">-</div>
+        </div>
+        
+        <div id="infoBox" class="info hidden"></div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+            
+            const sourceBaseInput = document.getElementById('sourceBase');
+            const customCharsInput = document.getElementById('customChars');
+            const targetBaseInput = document.getElementById('targetBase');
+            const numberInput = document.getElementById('numberInput');
+            const resultValue = document.getElementById('resultValue');
+            const resultValue2 = document.getElementById('resultValue2');
+            const resultBox2 = document.getElementById('resultBox2');
+            const infoBox = document.getElementById('infoBox');
+            const charCount = document.getElementById('charCount');
+            
+            // Validasi dan konversi
+            function validateAndConvert() {
+                // Reset info
+                infoBox.classList.add('hidden');
+                infoBox.classList.remove('error');
+                
+                try {
+                    // Parse input
+                    const sourceBase = parseInt(sourceBaseInput.value);
+                    const targetBase = parseInt(targetBaseInput.value);
+                    const numberStr = numberInput.value.trim();
+                    
+                    if (!numberStr) {
+                        showError('Masukkan angka terlebih dahulu!');
+                        return;
+                    }
+                    
+                    if (isNaN(sourceBase) || sourceBase < 2) {
+                        showError('Basis sumber harus ≥ 2');
+                        return;
+                    }
+                    
+                    if (isNaN(targetBase) || targetBase < 2) {
+                        showError('Basis tujuan harus ≥ 2');
+                        return;
+                    }
+                    
+                    // Parse custom characters
+                    const customChars = customCharsInput.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                    
+                    if (customChars.length === 0) {
+                        showError('Masukkan minimal 1 karakter custom!');
+                        return;
+                    }
+                    
+                    // Update char count
+                    charCount.textContent = `${customChars.length} karakter`;
+                    
+                    // Check for duplicate characters
+                    const uniqueChars = new Set(customChars);
+                    if (uniqueChars.size !== customChars.length) {
+                        showError('Karakter custom tidak boleh duplikat!');
+                        return;
+                    }
+                    
+                    // Konversi dari custom ke desimal dulu
+                    let decimalValue;
+                    let isCustomInput = false;
+                    
+                    // Cek apakah input menggunakan karakter custom
+                    const customPattern = new RegExp(`^[${customChars.join('')}]+$`);
+                    if (customPattern.test(numberStr)) {
+                        isCustomInput = true;
+                        // Konversi dari custom ke desimal
+                        decimalValue = convertCustomToDecimal(numberStr, customChars);
+                    } else {
+                        // Coba parse sebagai angka biasa
+                        decimalValue = parseInt(numberStr);
+                        if (isNaN(decimalValue)) {
+                            showError('Format angka tidak valid!');
+                            return;
+                        }
+                    }
+                    
+                    // Konversi ke basis tujuan dengan karakter custom
+                    const result = convertDecimalToCustom(decimalValue, targetBase, customChars);
+                    
+                    // Tampilkan hasil
+                    resultValue.textContent = result;
+                    
+                    // Tampilkan representasi custom juga
+                    if (isCustomInput) {
+                        resultValue2.textContent = numberStr + ' (custom) → ' + decimalValue + ' (desimal)';
+                        resultBox2.style.display = 'block';
+                    } else {
+                        resultValue2.textContent = decimalValue + ' (desimal) → ' + result + ' (custom)';
+                        resultBox2.style.display = 'block';
+                    }
+                    
+                    // Info tambahan
+                    showInfo(`Basis ${sourceBase} → Basis ${targetBase} | Karakter: ${customChars.join(', ')}`);
+                    
+                } catch (error) {
+                    showError('Terjadi kesalahan: ' + error.message);
+                }
+            }
+            
+            // Konversi dari custom ke desimal
+            function convertCustomToDecimal(customStr, customChars) {
+                let result = 0;
+                const base = customChars.length;
+                
+                for (let i = 0; i < customStr.length; i++) {
+                    const char = customStr[i];
+                    const index = customChars.indexOf(char);
+                    if (index === -1) {
+                        throw new Error(`Karakter '${char}' tidak ditemukan di karakter custom!`);
+                    }
+                    result = result * base + index;
+                }
+                
+                return result;
+            }
+            
+            // Konversi dari desimal ke custom
+            function convertDecimalToCustom(decimal, targetBase, customChars) {
+                if (decimal === 0) return customChars[0] || '0';
+                
+                const base = targetBase;
+                const chars = customChars;
+                let result = '';
+                let num = decimal;
+                
+                while (num > 0) {
+                    const remainder = num % base;
+                    if (remainder >= chars.length) {
+                        throw new Error(`Nilai ${remainder} melebihi jumlah karakter custom (${chars.length})`);
+                    }
+                    result = chars[remainder] + result;
+                    num = Math.floor(num / base);
+                }
+                
+                return result || (chars[0] || '0');
+            }
+            
+            // Swap bases
+            function swapBases() {
+                const temp = sourceBaseInput.value;
+                sourceBaseInput.value = targetBaseInput.value;
+                targetBaseInput.value = temp;
+                validateAndConvert();
+            }
+            
+            // Clear all
+            function clearAll() {
+                numberInput.value = '';
+                resultValue.textContent = '-';
+                resultValue2.textContent = '-';
+                resultBox2.style.display = 'none';
+                infoBox.classList.add('hidden');
+                charCount.textContent = '0 karakter';
+            }
+            
+            // Show example
+            function showExample() {
+                sourceBaseInput.value = '10';
+                targetBaseInput.value = '10';
+                customCharsInput.value = 'g,j,b,k,l,d,r,a,y,o';
+                numberInput.value = '123';
+                charCount.textContent = '10 karakter';
+                validateAndConvert();
+            }
+            
+            // Show error
+            function showError(message) {
+                infoBox.textContent = '⚠️ ' + message;
+                infoBox.className = 'info error';
+                infoBox.classList.remove('hidden');
+                resultValue.textContent = 'Error';
+                resultValue2.textContent = '-';
+                resultBox2.style.display = 'none';
+            }
+            
+            // Show info
+            function showInfo(message) {
+                infoBox.textContent = 'ℹ️ ' + message;
+                infoBox.className = 'info';
+                infoBox.classList.remove('hidden');
+            }
+            
+            // Event listeners
+            document.getElementById('convertBtn').addEventListener('click', validateAndConvert);
+            document.getElementById('swapBtn').addEventListener('click', swapBases);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('exampleBtn').addEventListener('click', showExample);
+            
+            // Enter key support
+            numberInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    validateAndConvert();
+                }
+            });
+            
+            // Auto-update char count
+            customCharsInput.addEventListener('input', function() {
+                const chars = this.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                charCount.textContent = chars.length + ' karakter';
+            });
+            
+            // Auto-convert on input change (optional)
+            // Uncomment for real-time conversion
+            // numberInput.addEventListener('input', validateAndConvert);
+            // sourceBaseInput.addEventListener('change', validateAndConvert);
+            // targetBaseInput.addEventListener('change', validateAndConvert);
+            // customCharsInput.addEventListener('change', validateAndConvert);
+            
+            // Initial example
+            setTimeout(showExample, 100);
+            
+        })();
+    </script>
+</body>
+</html>
