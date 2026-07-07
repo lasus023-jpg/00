@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Karakter untuk Label Koordinat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        }
+        h1 {
+            color: #fff;
+            font-weight: 300;
+            font-size: 2rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 0.85rem;
+            color: #8888bb;
+            font-weight: 300;
+        }
+        .subtitle {
+            color: #9999cc;
+            border-left: 3px solid #6c5bb0;
+            padding-left: 16px;
+            margin-bottom: 30px;
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .char-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .char-card:hover {
+            background: rgba(108, 91, 176, 0.2);
+            border-color: #6c5bb0;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 91, 176, 0.2);
+        }
+        .char-card .char {
+            font-size: 2rem;
+            line-height: 1.4;
+            color: #f0ecff;
+        }
+        .char-card .index {
+            font-size: 0.7rem;
+            color: #666699;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .char-card .coord {
+            font-size: 0.6rem;
+            color: #555577;
+            margin-top: 2px;
+        }
+        .section {
+            margin: 30px 0 20px 0;
+        }
+        .section-title {
+            color: #b8b0e0;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title .badge {
+            background: rgba(108, 91, 176, 0.2);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #9999cc;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: #6c5bb0;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(108, 91, 176, 0.3);
+        }
+        .btn:hover {
+            background: #7e6ec9;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .output-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .output-box .label {
+            color: #8888bb;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .output-box .value {
+            color: #f0ecff;
+            font-size: 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 6px;
+            word-break: break-all;
+        }
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #8888bb;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.15s;
+            margin-left: 10px;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .search-box {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.4);
+            color: #f0ecff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+            margin-bottom: 16px;
+        }
+        .search-box:focus {
+            border-color: #6c5bb0;
+            box-shadow: 0 0 0 3px rgba(108, 91, 176, 0.15);
+        }
+        .highlight {
+            background: rgba(108, 91, 176, 0.3);
+            border-color: #6c5bb0;
+        }
+        .footer {
+            margin-top: 30px;
+            color: #555577;
+            font-size: 0.8rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            color: #8888bb;
+            font-size: 0.85rem;
+        }
+        .stats span {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+        .stats .num {
+            color: #d0c8f0;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .grid-container { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+            .char-card .char { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        🎯 100 Karakter Konvensional
+        <small>untuk Label Koordinat</small>
+    </h1>
+    <div class="subtitle">
+        Pilih karakter yang cocok untuk mewakili koordinat (X, Y) · Klik untuk salin
+    </div>
+
+    <!-- Search -->
+    <input type="text" class="search-box" id="searchChar" placeholder="🔍 Cari karakter... (contoh: bintang, hati, panah)">
+
+    <!-- Grid Karakter -->
+    <div class="grid-container" id="charGrid"></div>
+
+    <!-- Toolbox -->
+    <div class="section">
+        <div class="section-title">
+            🧰 Tools
+            <span class="badge">Copy & Export</span>
+        </div>
+        <div class="btn-group">
+            <button class="btn" id="copyAllChars">📋 Salin Semua Karakter</button>
+            <button class="btn btn-outline" id="copyAsCSV">📊 Salin sebagai CSV</button>
+            <button class="btn btn-outline" id="copyAsJSON">📦 Salin sebagai JSON</button>
+        </div>
+        <div class="output-box">
+            <div class="label">Output</div>
+            <div class="value" id="outputDisplay">Klik tombol di atas untuk menyalin karakter</div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <span>Total karakter: <span class="num" id="totalChars">100</span></span>
+        <span>Dipilih: <span class="num" id="selectedCount">0</span></span>
+        <span>💡 Klik karakter untuk memilih/membatalkan</span>
+    </div>
+
+    <!-- Preview Koordinat -->
+    <div class="section" style="margin-top:20px;">
+        <div class="section-title">
+            🔢 Preview Mapping Koordinat
+            <span class="badge">Indeks → Karakter</span>
+        </div>
+        <div style="background:rgba(0,0,0,0.2);border-radius:12px;padding:14px 18px;max-height:200px;overflow-y:auto;">
+            <div id="coordPreview" style="color:#9999cc;font-size:0.85rem;font-family:'JetBrains Mono',monospace;"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        ⚡ 100 karakter siap pakai · 0-9, A-Z, a-z, simbol, dan emoji sederhana · Klik karakter untuk menyalin
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 100 KARAKTER KONVENSIONAL ----------
+        // Diurutkan dari yang paling umum digunakan
+        const CHAR_SET = [
+            // 0-9 (10 karakter)
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            // A-Z (26 karakter)
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z',
+            // a-z (26 karakter)
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
+            // Simbol umum (18 karakter)
+            '!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+            '-', '_', '+', '=', '[', ']', '{', '}',
+            // Simbol tambahan (20 karakter)
+            '♥', '♦', '♣', '♠', '★', '☆', '✓', '✗', '✧', '✦',
+            '◆', '◈', '◉', '◎', '◍', '●', '○', '◐', '◑', '◒'
+        ];
+
+        // Nama/deskripsi untuk setiap karakter
+        const CHAR_NAMES = {
+            '0': 'nol', '1': 'satu', '2': 'dua', '3': 'tiga', '4': 'empat',
+            '5': 'lima', '6': 'enam', '7': 'tujuh', '8': 'delapan', '9': 'sembilan',
+            'A': 'A kapital', 'B': 'B kapital', 'C': 'C kapital', 'D': 'D kapital', 'E': 'E kapital',
+            'F': 'F kapital', 'G': 'G kapital', 'H': 'H kapital', 'I': 'I kapital', 'J': 'J kapital',
+            'K': 'K kapital', 'L': 'L kapital', 'M': 'M kapital', 'N': 'N kapital', 'O': 'O kapital',
+            'P': 'P kapital', 'Q': 'Q kapital', 'R': 'R kapital', 'S': 'S kapital', 'T': 'T kapital',
+            'U': 'U kapital', 'V': 'V kapital', 'W': 'W kapital', 'X': 'X kapital', 'Y': 'Y kapital',
+            'Z': 'Z kapital',
+            'a': 'a kecil', 'b': 'b kecil', 'c': 'c kecil', 'd': 'd kecil', 'e': 'e kecil',
+            'f': 'f kecil', 'g': 'g kecil', 'h': 'h kecil', 'i': 'i kecil', 'j': 'j kecil',
+            'k': 'k kecil', 'l': 'l kecil', 'm': 'm kecil', 'n': 'n kecil', 'o': 'o kecil',
+            'p': 'p kecil', 'q': 'q kecil', 'r': 'r kecil', 's': 's kecil', 't': 't kecil',
+            'u': 'u kecil', 'v': 'v kecil', 'w': 'w kecil', 'x': 'x kecil', 'y': 'y kecil',
+            'z': 'z kecil',
+            '!': 'seru', '@': 'at', '#': 'pagar', '$': 'dolar', '%': 'persen',
+            '^': 'pangkat', '&': 'dan', '*': 'bintang', '(': 'kurung buka', ')': 'kurung tutup',
+            '-': 'strip', '_': 'garis bawah', '+': 'tambah', '=': 'sama dengan',
+            '[': 'kurung siku buka', ']': 'kurung siku tutup',
+            '{': 'kurung kurawal buka', '}': 'kurung kurawal tutup',
+            '♥': 'hati', '♦': 'wajik', '♣': 'keriting', '♠': 'sekop',
+            '★': 'bintang solid', '☆': 'bintang hollow', '✓': 'centang', '✗': 'silang',
+            '✧': 'bintang kecil', '✦': 'bintang kecil solid',
+            '◆': 'wajik solid', '◈': 'wajik hollow', '◉': 'lingkaran target',
+            '◎': 'lingkaran hollow', '◍': 'lingkaran solid dengan titik',
+            '●': 'lingkaran solid', '○': 'lingkaran hollow',
+            '◐': 'lingkaran setengah', '◑': 'lingkaran setengah', '◒': 'lingkaran setengah'
+        };
+
+        // ---------- STATE ----------
+        let selectedChars = new Set();
+
+        // ---------- RENDER GRID ----------
+        function renderGrid(filter = '') {
+            const grid = document.getElementById('charGrid');
+            grid.innerHTML = '';
+            let count = 0;
+
+            CHAR_SET.forEach((char, index) => {
+                const name = CHAR_NAMES[char] || `karakter ${index}`;
+                const searchText = `${char} ${name} ${index}`.toLowerCase();
+
+                // Filter
+                if (filter && !searchText.includes(filter.toLowerCase())) {
+                    return;
+                }
+
+                count++;
+                const x = Math.floor(index / 10);
+                const y = index % 10;
+
+                const card = document.createElement('div');
+                card.className = 'char-card';
+                if (selectedChars.has(char)) {
+                    card.classList.add('highlight');
+                }
+                card.innerHTML = `
+                    <div class="char">${char}</div>
+                    <div class="index">#${index}</div>
+                    <div class="coord">(${x},${y})</div>
+                `;
+
+                card.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleSelect(char);
+                });
+
+                // Double click untuk copy
+                card.addEventListener('dblclick', function() {
+                    copyToClipboard(char);
+                });
+
+                grid.appendChild(card);
+            });
+
+            document.getElementById('totalChars').textContent = count;
+        }
+
+        // ---------- TOGGLE SELECT ----------
+        function toggleSelect(char) {
+            if (selectedChars.has(char)) {
+                selectedChars.delete(char);
+            } else {
+                selectedChars.add(char);
+            }
+            document.getElementById('selectedCount').textContent = selectedChars.size;
+            renderGrid(document.getElementById('searchChar').value);
+            updateCoordPreview();
+        }
+
+        // ---------- COPY FUNCTIONS ----------
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const output = document.getElementById('outputDisplay');
+                output.textContent = `✅ "${text}" disalin ke clipboard!`;
+                setTimeout(() => {
+                    output.textContent = 'Klik tombol di atas untuk menyalin karakter';
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert(`"${text}" disalin!`);
+            });
+        }
+
+        document.getElementById('copyAllChars').addEventListener('click', function() {
+            const allChars = CHAR_SET.join('');
+            copyToClipboard(allChars);
+            document.getElementById('outputDisplay').textContent = `✅ ${allChars.length} karakter disalin!`;
+        });
+
+        document.getElementById('copyAsCSV').addEventListener('click', function() {
+            const csv = CHAR_SET.map((char, i) => `${i},${char},${CHAR_NAMES[char] || ''}`).join('\n');
+            copyToClipboard(csv);
+            document.getElementById('outputDisplay').textContent = `✅ CSV dengan ${CHAR_SET.length} baris disalin!`;
+        });
+
+        document.getElementById('copyAsJSON').addEventListener('click', function() {
+            const json = JSON.stringify(CHAR_SET, null, 2);
+            copyToClipboard(json);
+            document.getElementById('outputDisplay').textContent = `✅ JSON dengan ${CHAR_SET.length} karakter disalin!`;
+        });
+
+        // ---------- SEARCH ----------
+        document.getElementById('searchChar').addEventListener('input', function() {
+            renderGrid(this.value);
+        });
+
+        // ---------- PREVIEW KOORDINAT ----------
+        function updateCoordPreview() {
+            const preview = document.getElementById('coordPreview');
+            if (selectedChars.size === 0) {
+                preview.innerHTML = '<span style="color:#555577;">Klik karakter untuk memilih dan lihat mapping koordinatnya</span>';
+                return;
+            }
+
+            let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;">';
+            const sorted = Array.from(selectedChars).sort();
+            for (const char of sorted) {
+                const index = CHAR_SET.indexOf(char);
+                if (index !== -1) {
+                    const x = Math.floor(index / 10);
+                    const y = index % 10;
+                    html += `
+                        <div style="background:rgba(108,91,176,0.1);border-radius:8px;padding:6px 10px;text-align:center;">
+                            <span style="font-size:1.2rem;">${char}</span>
+                            <span style="color:#666699;font-size:0.7rem;display:block;">(${x}, ${y})</span>
+                        </div>
+                    `;
+                }
+            }
+            html += '</div>';
+            preview.innerHTML = html;
+        }
+
+        // ---------- INIT ----------
+        renderGrid('');
+        document.getElementById('selectedCount').textContent = '0';
+        updateCoordPreview();
+
+        // Select some default chars as example
+        const defaultSelect = ['0', 'A', 'a', '♥', '★', '✓', '●', '!'];
+        defaultSelect.forEach(char => {
+            if (CHAR_SET.includes(char)) {
+                selectedChars.add(char);
+            }
+        });
+        document.getElementById('selectedCount').textContent = selectedChars.size;
+        renderGrid('');
+        updateCoordPreview();
+
+        console.log('🎯 100 Karakter siap digunakan!');
+        console.log('💡 Klik karakter untuk memilih, double-click untuk copy');
+        console.log('📋 Total karakter:', CHAR_SET.length);
+
+        // Keyboard shortcut: Ctrl+A untuk select all
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                if (selectedChars.size === CHAR_SET.length) {
+                    selectedChars.clear();
+                } else {
+                    CHAR_SET.forEach(char => selectedChars.add(char));
+                }
+                document.getElementById('selectedCount').textContent = selectedChars.size;
+                renderGrid(document.getElementById('searchChar').value);
+                updateCoordPreview();
+            }
+        });
+
+    })();
+</script>
+</body>
+</html>
