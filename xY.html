@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koordinat Encode - 2D Compression</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            border-radius: 32px;
+            padding: 40px 35px;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        }
+        h1 {
+            color: #fff;
+            font-weight: 300;
+            font-size: 2rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 0.85rem;
+            color: #8888bb;
+            font-weight: 300;
+        }
+        .subtitle {
+            color: #9999cc;
+            border-left: 3px solid #6c5bb0;
+            padding-left: 16px;
+            margin-bottom: 28px;
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 700px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+        .section {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 20px;
+            padding: 22px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .section-title {
+            color: #b8b0e0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .field-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            color: #aaaadd;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.4);
+            color: #f0ecff;
+            font-size: 0.95rem;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            transition: 0.2s;
+        }
+        input:focus,
+        textarea:focus {
+            border-color: #7c6bc0;
+            background: rgba(0, 0, 0, 0.55);
+            box-shadow: 0 0 0 3px rgba(108, 91, 176, 0.15);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            background: #6c5bb0;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(108, 91, 176, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #7e6ec9;
+            box-shadow: 0 8px 24px rgba(108, 91, 176, 0.4);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-outline {
+            background: transparent;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #7c6bc0;
+            box-shadow: none;
+            transform: none;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .result-box {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            border-left: 3px solid #6c5bb0;
+            min-height: 50px;
+            word-break: break-all;
+        }
+        .result-box .label {
+            color: #8888bb;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .result-box .value {
+            color: #f0ecff;
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .result-box .value.small {
+            font-size: 1rem;
+        }
+        .stat {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #8888bb;
+        }
+        .stat span {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .stat .num {
+            color: #d0c8f0;
+            font-weight: 600;
+        }
+        .info-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-top: 14px;
+            color: #aaaadd;
+            font-size: 0.85rem;
+        }
+        .info-box strong {
+            color: #d0c8f0;
+        }
+        .char-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+        .char-preview .char-item {
+            background: rgba(108, 91, 176, 0.15);
+            border: 1px solid rgba(108, 91, 176, 0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: #d0c8f0;
+        }
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #8888bb;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.15s;
+            margin-left: 8px;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .footer {
+            margin-top: 28px;
+            color: #555577;
+            font-size: 0.8rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(108, 91, 176, 0.2);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #9999cc;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        🗺️ Koordinat Encode
+        <small>2D Compression</small>
+    </h1>
+    <div class="subtitle">
+        Ubah deret angka menjadi 1-2 karakter custom · Mirip koordinat (X, Y)
+    </div>
+
+    <div class="grid-2col">
+        <!-- Panel Kiri: Encode -->
+        <div class="section">
+            <div class="section-title">
+                🔐 Encode
+                <span class="badge">Angka → Karakter</span>
+            </div>
+
+            <div class="field-group">
+                <label>📥 Input (deret angka)</label>
+                <input type="text" id="encodeInput" value="2413" placeholder="Contoh: 2413 atau 123456">
+            </div>
+
+            <div class="field-group">
+                <label>🔢 Mode</label>
+                <select id="encodeMode" style="width:100%;padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.4);color:#f0ecff;font-size:0.95rem;outline:none;">
+                    <option value="auto">Auto (deteksi pasangan)</option>
+                    <option value="pair">Pasangan (2 digit per koordinat)</option>
+                    <option value="single">Single digit per koordinat</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>🎨 Karakter Custom (opsional, pisahkan dengan koma)</label>
+                <input type="text" id="customChars" placeholder="Contoh: ©,®,★,♦,♣,♥,♠" value="©,®,★,♦,♣,♥,♠,▲,▼,◄,►,✓,✗,⚡,🔥,💎,🌈,🍕,🎯,🚀,⭐,🌙,☀️,🌸,🌺,🎨,🏆,🎵,🎶,⚽,🏀,🎮,📱,💻,⌨️,🖱️,🖥️,📀,💾,🕹️,🎰,🎲,🎯,🏹,🗡️,🛡️,⚔️,🏰,🗿,🎭,🎪,🎨,🎼,🎹,🥁,🎷,🎺,🎸,🎻,🥇,🥈,🥉,🏅,🎖️,🏵️">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="encodeBtn">🚀 Encode</button>
+                <button class="btn btn-outline btn-sm" id="clearEncode">✕ Clear</button>
+            </div>
+
+            <div class="result-box">
+                <div class="label">Hasil Encode</div>
+                <div class="value" id="encodeResult">—</div>
+                <button class="copy-btn" id="copyEncodeResult">📋 Salin</button>
+            </div>
+
+            <div class="stat">
+                <span>Input: <span class="num" id="encInLen">0</span> digit</span>
+                <span>Output: <span class="num" id="encOutLen">0</span> karakter</span>
+                <span>Kompresi: <span class="num" id="encRatio">-</span>×</span>
+            </div>
+
+            <div class="info-box" id="encodeInfo">
+                <strong>ℹ️</strong> Masukkan deret angka, pilih mode, dan dapatkan karakter custom.
+            </div>
+        </div>
+
+        <!-- Panel Kanan: Decode -->
+        <div class="section">
+            <div class="section-title">
+                🔓 Decode
+                <span class="badge">Karakter → Angka</span>
+            </div>
+
+            <div class="field-group">
+                <label>📥 Input (karakter hasil encode)</label>
+                <input type="text" id="decodeInput" value="©®" placeholder="Contoh: ©® atau ★♦">
+            </div>
+
+            <div class="field-group">
+                <label>🔢 Mode (sama seperti saat encode)</label>
+                <select id="decodeMode" style="width:100%;padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.4);color:#f0ecff;font-size:0.95rem;outline:none;">
+                    <option value="auto">Auto (deteksi pasangan)</option>
+                    <option value="pair">Pasangan (2 digit per koordinat)</option>
+                    <option value="single">Single digit per koordinat</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>🎨 Karakter Custom (sama dengan saat encode)</label>
+                <input type="text" id="decodeCustomChars" placeholder="Contoh: ©,®,★,♦,♣,♥,♠" value="©,®,★,♦,♣,♥,♠,▲,▼,◄,►,✓,✗,⚡,🔥,💎,🌈,🍕,🎯,🚀,⭐,🌙,☀️,🌸,🌺,🎨,🏆,🎵,🎶,⚽,🏀,🎮,📱,💻,⌨️,🖱️,🖥️,📀,💾,🕹️,🎰,🎲,🎯,🏹,🗡️,🛡️,⚔️,🏰,🗿,🎭,🎪,🎨,🎼,🎹,🥁,🎷,🎺,🎸,🎻,🥇,🥈,🥉,🏅,🎖️,🏵️">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="decodeBtn">🔓 Decode</button>
+                <button class="btn btn-outline btn-sm" id="clearDecode">✕ Clear</button>
+            </div>
+
+            <div class="result-box">
+                <div class="label">Hasil Decode</div>
+                <div class="value" id="decodeResult">—</div>
+                <button class="copy-btn" id="copyDecodeResult">📋 Salin</button>
+            </div>
+
+            <div class="stat">
+                <span>Input: <span class="num" id="decInLen">0</span> karakter</span>
+                <span>Output: <span class="num" id="decOutLen">0</span> digit</span>
+            </div>
+
+            <div class="info-box" id="decodeInfo">
+                <strong>ℹ️</strong> Tempel karakter hasil encode, pilih mode yang sama, dapatkan angka asli.
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Karakter -->
+    <div style="margin-top:20px;background:rgba(0,0,0,0.15);border-radius:16px;padding:14px 20px;">
+        <div style="color:#8888bb;font-size:0.8rem;margin-bottom:6px;">📋 Karakter yang tersedia (urut):</div>
+        <div class="char-preview" id="charPreview"></div>
+    </div>
+
+    <div class="footer">
+        ⚡ Setiap karakter mewakili koordinat (X, Y) · 2 digit → 1 karakter · Kompresi hingga 50% atau lebih
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ---------- CORE LOGIC ----------
+        function getCharset(customCharsStr) {
+            if (!customCharsStr || customCharsStr.trim() === '') {
+                // Default charset: 0-9, A-Z, a-z
+                let s = '';
+                for (let i = 0; i < 62; i++) {
+                    if (i < 10) s += String.fromCharCode(48 + i);
+                    else if (i < 36) s += String.fromCharCode(65 + i - 10);
+                    else s += String.fromCharCode(97 + i - 36);
+                }
+                return s;
+            }
+            // Parse custom characters
+            const chars = customCharsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            // Remove duplicates
+            const unique = [...new Set(chars)];
+            return unique.join('');
+        }
+
+        function getCharMap(charset) {
+            const map = {};
+            for (let i = 0; i < charset.length; i++) {
+                map[charset[i]] = i;
+            }
+            return map;
+        }
+
+        // Encode angka ke karakter berdasarkan koordinat
+        function encodeCoordinates(inputStr, mode, charset) {
+            // Bersihkan input: ambil hanya digit
+            const digits = inputStr.replace(/\D/g, '');
+            if (digits.length === 0) {
+                throw new Error('Input harus mengandung angka');
+            }
+
+            let pairs = [];
+            if (mode === 'single') {
+                // Setiap digit menjadi koordinat sendiri
+                for (let i = 0; i < digits.length; i++) {
+                    pairs.push([parseInt(digits[i]), 0]);
+                }
+            } else if (mode === 'pair') {
+                // Pasangan 2 digit: [x, y]
+                for (let i = 0; i < digits.length; i += 2) {
+                    const x = parseInt(digits[i]);
+                    const y = (i + 1 < digits.length) ? parseInt(digits[i + 1]) : 0;
+                    pairs.push([x, y]);
+                }
+            } else { // auto
+                // Jika panjang genap: pair, jika ganjil: single
+                if (digits.length % 2 === 0) {
+                    for (let i = 0; i < digits.length; i += 2) {
+                        pairs.push([parseInt(digits[i]), parseInt(digits[i + 1])]);
+                    }
+                } else {
+                    for (let i = 0; i < digits.length; i++) {
+                        pairs.push([parseInt(digits[i]), 0]);
+                    }
+                }
+            }
+
+            // Konversi setiap pasangan ke indeks karakter
+            const maxIndex = charset.length - 1;
+            const result = [];
+            for (const [x, y] of pairs) {
+                // x sebagai baris, y sebagai kolom
+                // indeks = x * 10 + y (atau custom mapping)
+                let idx = x * 10 + y;
+                if (idx > maxIndex) {
+                    // Coba mapping alternatif: (x * 10 + y) mod length
+                    idx = idx % (maxIndex + 1);
+                }
+                result.push(charset[idx] || charset[0]);
+            }
+
+            return {
+                encoded: result.join(''),
+                pairs: pairs,
+                originalLength: digits.length,
+                encodedLength: result.length
+            };
+        }
+
+        // Decode karakter ke angka
+        function decodeCoordinates(encodedStr, mode, charset) {
+            const charMap = getCharMap(charset);
+            const chars = [...encodedStr];
+            const maxIndex = charset.length - 1;
+
+            let result = [];
+            for (const ch of chars) {
+                const idx = charMap[ch];
+                if (idx === undefined) {
+                    throw new Error(`Karakter "${ch}" tidak dikenal dalam charset`);
+                }
+                // Kembalikan ke koordinat
+                const x = Math.floor(idx / 10);
+                const y = idx % 10;
+                result.push([x, y]);
+            }
+
+            // Konversi ke string angka
+            let digits = '';
+            if (mode === 'single') {
+                for (const [x, y] of result) {
+                    digits += x.toString();
+                }
+            } else if (mode === 'pair') {
+                for (const [x, y] of result) {
+                    digits += x.toString() + y.toString();
+                }
+            } else { // auto
+                // Jika semua y = 0, berarti single
+                const allYZero = result.every(([x, y]) => y === 0);
+                if (allYZero) {
+                    for (const [x, y] of result) {
+                        digits += x.toString();
+                    }
+                } else {
+                    for (const [x, y] of result) {
+                        digits += x.toString() + y.toString();
+                    }
+                }
+            }
+
+            return {
+                decoded: digits,
+                pairs: result,
+                originalLength: encodedStr.length,
+                decodedLength: digits.length
+            };
+        }
+
+        // ---------- UI ELEMENTS ----------
+        const encodeInput = document.getElementById('encodeInput');
+        const encodeMode = document.getElementById('encodeMode');
+        const customChars = document.getElementById('customChars');
+        const encodeBtn = document.getElementById('encodeBtn');
+        const clearEncode = document.getElementById('clearEncode');
+        const encodeResult = document.getElementById('encodeResult');
+        const copyEncodeResult = document.getElementById('copyEncodeResult');
+        const encInLen = document.getElementById('encInLen');
+        const encOutLen = document.getElementById('encOutLen');
+        const encRatio = document.getElementById('encRatio');
+        const encodeInfo = document.getElementById('encodeInfo');
+
+        const decodeInput = document.getElementById('decodeInput');
+        const decodeMode = document.getElementById('decodeMode');
+        const decodeCustomChars = document.getElementById('decodeCustomChars');
+        const decodeBtn = document.getElementById('decodeBtn');
+        const clearDecode = document.getElementById('clearDecode');
+        const decodeResult = document.getElementById('decodeResult');
+        const copyDecodeResult = document.getElementById('copyDecodeResult');
+        const decInLen = document.getElementById('decInLen');
+        const decOutLen = document.getElementById('decOutLen');
+        const decodeInfo = document.getElementById('decodeInfo');
+
+        const charPreview = document.getElementById('charPreview');
+
+        // ---------- FUNCTIONS ----------
+        function updateCharPreview(charsetStr) {
+            const chars = [...charsetStr];
+            let html = '';
+            const maxShow = 30;
+            for (let i = 0; i < Math.min(chars.length, maxShow); i++) {
+                html += `<span class="char-item">${chars[i]}</span>`;
+            }
+            if (chars.length > maxShow) {
+                html += `<span class="char-item">… +${chars.length - maxShow} lagi</span>`;
+            }
+            charPreview.innerHTML = html || '<span style="color:#555577;">Tidak ada karakter</span>';
+        }
+
+        function getCharsetFromInput(inputEl) {
+            return getCharset(inputEl.value);
+        }
+
+        function doEncode() {
+            try {
+                const input = encodeInput.value;
+                const mode = encodeMode.value;
+                const charset = getCharsetFromInput(customChars);
+
+                if (charset.length === 0) {
+                    encodeInfo.innerHTML = '<strong>⚠️</strong> Tidak ada karakter custom yang valid.';
+                    return;
+                }
+
+                const result = encodeCoordinates(input, mode, charset);
+                encodeResult.textContent = result.encoded;
+                encInLen.textContent = result.originalLength;
+                encOutLen.textContent = result.encodedLength;
+                const ratio = result.originalLength > 0 ? (result.originalLength / result.encodedLength).toFixed(2) : '∞';
+                encRatio.textContent = ratio;
+
+                const pairInfo = result.pairs.map(([x, y]) => `(${x},${y})`).join(' ');
+                encodeInfo.innerHTML = `<strong>✅ Sukses!</strong> ${result.originalLength} digit → ${result.encodedLength} karakter (${ratio}× kompresi). Koordinat: ${pairInfo}`;
+
+                // Update preview
+                updateCharPreview(charset);
+
+            } catch (e) {
+                encodeInfo.innerHTML = `<strong>❌ Error:</strong> ${e.message}`;
+                encodeResult.textContent = 'Error';
+            }
+        }
+
+        function doDecode() {
+            try {
+                const input = decodeInput.value;
+                const mode = decodeMode.value;
+                const charset = getCharsetFromInput(decodeCustomChars);
+
+                if (charset.length === 0) {
+                    decodeInfo.innerHTML = '<strong>⚠️</strong> Tidak ada karakter custom yang valid.';
+                    return;
+                }
+
+                const result = decodeCoordinates(input, mode, charset);
+                decodeResult.textContent = result.decoded;
+                decInLen.textContent = result.originalLength;
+                decOutLen.textContent = result.decodedLength;
+
+                const pairInfo = result.pairs.map(([x, y]) => `(${x},${y})`).join(' ');
+                decodeInfo.innerHTML = `<strong>✅ Sukses!</strong> ${result.originalLength} karakter → ${result.decodedLength} digit. Koordinat: ${pairInfo}`;
+
+                updateCharPreview(charset);
+
+            } catch (e) {
+                decodeInfo.innerHTML = `<strong>❌ Error:</strong> ${e.message}`;
+                decodeResult.textContent = 'Error';
+            }
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        encodeBtn.addEventListener('click', doEncode);
+        decodeBtn.addEventListener('click', doDecode);
+
+        clearEncode.addEventListener('click', function() {
+            encodeInput.value = '';
+            encodeResult.textContent = '—';
+            encInLen.textContent = '0';
+            encOutLen.textContent = '0';
+            encRatio.textContent = '-';
+            encodeInfo.innerHTML = '<strong>🧹</strong> Direset.';
+        });
+
+        clearDecode.addEventListener('click', function() {
+            decodeInput.value = '';
+            decodeResult.textContent = '—';
+            decInLen.textContent = '0';
+            decOutLen.textContent = '0';
+            decodeInfo.innerHTML = '<strong>🧹</strong> Direset.';
+        });
+
+        copyEncodeResult.addEventListener('click', function() {
+            const text = encodeResult.textContent;
+            if (text && text !== '—' && text !== 'Error') {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyEncodeResult.textContent = '✅ Disalin!';
+                    setTimeout(() => copyEncodeResult.textContent = '📋 Salin', 1500);
+                }).catch(() => alert('Salin manual: ' + text));
+            }
+        });
+
+        copyDecodeResult.addEventListener('click', function() {
+            const text = decodeResult.textContent;
+            if (text && text !== '—' && text !== 'Error') {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyDecodeResult.textContent = '✅ Disalin!';
+                    setTimeout(() => copyDecodeResult.textContent = '📋 Salin', 1500);
+                }).catch(() => alert('Salin manual: ' + text));
+            }
+        });
+
+        // Sync custom chars between encode and decode
+        customChars.addEventListener('input', function() {
+            decodeCustomChars.value = this.value;
+            updateCharPreview(getCharsetFromInput(this));
+        });
+
+        decodeCustomChars.addEventListener('input', function() {
+            customChars.value = this.value;
+            updateCharPreview(getCharsetFromInput(this));
+        });
+
+        // Auto-update stat
+        encodeInput.addEventListener('input', function() {
+            const digits = this.value.replace(/\D/g, '');
+            encInLen.textContent = digits.length;
+        });
+
+        decodeInput.addEventListener('input', function() {
+            decInLen.textContent = this.value.length;
+        });
+
+        // ---------- INIT ----------
+        // Show default charset preview
+        updateCharPreview(getCharsetFromInput(customChars));
+
+        // Auto-encode default value
+        setTimeout(doEncode, 100);
+
+        // Auto-decode default value
+        setTimeout(doDecode, 200);
+
+        console.log('🗺️ Koordinat Encode siap digunakan!');
+        console.log('💡 Mode: auto = deteksi pasangan, pair = 2 digit/koordinat, single = 1 digit/koordinat');
+
+    })();
+</script>
+</body>
+</html>
