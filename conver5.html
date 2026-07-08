@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Konversi Basis Custom - 2 Arah</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 98vh;
+            overflow-y: auto;
+        }
+        h1 { color: #333; font-size: 24px; text-align: center; margin-bottom: 4px; }
+        .subtitle { color: #666; text-align: center; font-size: 13px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; }
+        label .badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 6px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #fafafa;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        textarea { min-height: 50px; resize: vertical; font-family: 'Courier New', monospace; font-size: 16px; }
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 14px 0;
+        }
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-secondary { background: #f0f0f0; color: #555; }
+        .btn-secondary:active { background: #e0e0e0; transform: scale(0.97); }
+        .btn-success { background: #4caf50; color: white; }
+        .btn-success:active { transform: scale(0.97); }
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
+            border: 2px solid #e0e0e0;
+            min-height: 45px;
+        }
+        .result-box.highlight {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .result-label-text { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .result-value { 
+            font-family: 'Courier New', monospace; 
+            font-size: 20px; 
+            color: #333; 
+            margin-top: 2px; 
+            word-break: break-all; 
+            line-height: 1.5;
+        }
+        .result-value .highlight-text { color: #667eea; font-weight: bold; }
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1565c0;
+            margin: 10px 0;
+        }
+        .error { background: #ffebee; border-left: 4px solid #f44336; color: #c62828; }
+        .success { background: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32; }
+        .hidden { display: none; }
+        .char-counter { text-align: right; font-size: 11px; color: #999; margin-top: 3px; }
+        .separator-hint { font-size: 11px; color: #888; margin-top: 3px; font-style: italic; }
+        .method-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .method-btn {
+            padding: 4px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .method-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .method-btn:active { transform: scale(0.95); }
+        .direction-indicator {
+            text-align: center;
+            font-size: 20px;
+            color: #667eea;
+            margin: 8px 0;
+        }
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .copy-btn:hover {
+            background: #e8eaf6;
+        }
+        .copy-btn:active {
+            transform: scale(0.9);
+        }
+        .copy-btn.copied {
+            color: #4caf50;
+        }
+        .result-footer {
+            margin-top: 6px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        @media (max-width: 480px) {
+            .container { padding: 16px; }
+            input, textarea, select { font-size: 14px; padding: 8px 10px; }
+            .result-value { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Konversi Basis Custom</h1>
+        <p class="subtitle">Konversi 2 arah dengan basis & karakter custom</p>
+        
+        <!-- Source Base -->
+        <div class="form-group">
+            <label>Basis Sumber <span class="badge">Input</span></label>
+            <input type="number" id="sourceBase" value="10" min="2" max="999">
+        </div>
+        
+        <!-- Custom Characters -->
+        <div class="form-group">
+            <label>Karakter Custom <span class="badge">Untuk Input & Output</span></label>
+            <div class="method-selector">
+                <button class="method-btn active" data-method="comma">Koma (,)</button>
+                <button class="method-btn" data-method="pipe">Pipe (|)</button>
+                <button class="method-btn" data-method="json">JSON</button>
+                <button class="method-btn" data-method="perchar">Per Karakter</button>
+            </div>
+            <textarea id="customChars" rows="2">0,1,2,3,4,5,6,7,8,9</textarea>
+            <div class="char-counter" id="charCount">10 karakter</div>
+            <div class="separator-hint" id="separatorHint">💡 Pisahkan dengan koma (,). Contoh: 0,1,2,3,4,5,6,7,8,9</div>
+        </div>
+        
+        <!-- Target Base -->
+        <div class="form-group">
+            <label>Basis Tujuan <span class="badge">Output</span></label>
+            <input type="number" id="targetBase" value="16" min="2" max="999">
+        </div>
+        
+        <!-- Number Input -->
+        <div class="form-group">
+            <label>Angka yang akan dikonversi</label>
+            <input type="text" id="numberInput" placeholder="Masukkan angka dalam basis sumber..." value="255">
+        </div>
+        
+        <div class="direction-indicator" id="directionIndicator">
+            ⬇️ Sumber → Tujuan
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn-primary" id="convertBtn">🔄 Konversi</button>
+            <button class="btn-secondary" id="swapBtn">⇄ Tukar Basis</button>
+            <button class="btn-secondary" id="clearBtn">✕ Bersihkan</button>
+            <button class="btn-secondary" id="exampleBtn">📝 Contoh</button>
+        </div>
+        
+        <!-- Result 1 -->
+        <div class="result-box highlight" id="resultBox">
+            <div class="result-label">
+                <span class="result-label-text">📤 Hasil Konversi</span>
+                <button class="copy-btn" id="copyResultBtn" title="Salin hasil">📋 Salin</button>
+            </div>
+            <div class="result-value" id="resultValue">-</div>
+        </div>
+        
+        <!-- Result 2 (Detail) -->
+        <div class="result-box" id="resultBox2" style="display:none;">
+            <div class="result-label">
+                <span class="result-label-text">📋 Detail Konversi</span>
+                <button class="copy-btn" id="copyDetailBtn" title="Salin detail">📋 Salin</button>
+            </div>
+            <div class="result-value" id="resultValue2" style="font-size:14px; white-space: pre-wrap;">-</div>
+        </div>
+        
+        <!-- Info Box -->
+        <div id="infoBox" class="info hidden"></div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+            
+            let currentMethod = 'comma';
+            let lastResult = null;
+            let lastDetail = null;
+            
+            const sourceBaseInput = document.getElementById('sourceBase');
+            const customCharsInput = document.getElementById('customChars');
+            const targetBaseInput = document.getElementById('targetBase');
+            const numberInput = document.getElementById('numberInput');
+            const resultValue = document.getElementById('resultValue');
+            const resultValue2 = document.getElementById('resultValue2');
+            const resultBox2 = document.getElementById('resultBox2');
+            const infoBox = document.getElementById('infoBox');
+            const charCount = document.getElementById('charCount');
+            const separatorHint = document.getElementById('separatorHint');
+            const directionIndicator = document.getElementById('directionIndicator');
+            
+            // Copy buttons
+            const copyResultBtn = document.getElementById('copyResultBtn');
+            const copyDetailBtn = document.getElementById('copyDetailBtn');
+            
+            // Method selector
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMethod = this.dataset.method;
+                    
+                    const hints = {
+                        'comma': '💡 Pisahkan dengan koma (,). Contoh: 0,1,2,3,4,5,6,7,8,9',
+                        'pipe': '💡 Pisahkan dengan pipe (|). Contoh: 0|1|2|3|4|5|6|7|8|9',
+                        'json': '💡 Format JSON array. Contoh: ["0","1","2","3","4","5","6","7","8","9"]',
+                        'perchar': '💡 Setiap karakter dianggap satu. Contoh: 0123456789'
+                    };
+                    separatorHint.textContent = hints[currentMethod] || hints.comma;
+                    updateCharCount();
+                });
+            });
+            
+            function parseCustomChars(input) {
+                if (!input.trim()) return [];
+                
+                switch(currentMethod) {
+                    case 'json':
+                        try {
+                            const parsed = JSON.parse(input);
+                            if (Array.isArray(parsed)) {
+                                return parsed.filter(s => typeof s === 'string' && s.length > 0);
+                            }
+                            return [];
+                        } catch {
+                            return [];
+                        }
+                    case 'pipe':
+                        return input.split('|').filter(s => s.length > 0);
+                    case 'perchar':
+                        return input.split('').filter(s => s.length > 0);
+                    case 'comma':
+                    default:
+                        return input.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                }
+            }
+            
+            function updateCharCount() {
+                const chars = parseCustomChars(customCharsInput.value);
+                charCount.textContent = chars.length + ' karakter';
+                return chars;
+            }
+            
+            // 🔥 KONVERSI UTAMA - DENGAN LOGIKA YANG BENAR
+            function convertNumber(numberStr, sourceBase, targetBase, customChars) {
+                // STEP 1: Konversi dari basis sumber ke desimal
+                let decimalValue = 0;
+                const base = sourceBase;
+                
+                // Cek apakah input menggunakan karakter custom
+                let isCustomInput = true;
+                for (let char of numberStr) {
+                    if (!customChars.includes(char)) {
+                        isCustomInput = false;
+                        break;
+                    }
+                }
+                
+                if (isCustomInput && numberStr.length > 0) {
+                    // Konversi dari custom ke desimal
+                    for (let i = 0; i < numberStr.length; i++) {
+                        const char = numberStr[i];
+                        const index = customChars.indexOf(char);
+                        if (index === -1) {
+                            throw new Error(`Karakter '${char}' tidak ditemukan di daftar custom!`);
+                        }
+                        decimalValue = decimalValue * base + index;
+                    }
+                } else {
+                    // Input adalah angka biasa (0-9)
+                    decimalValue = parseInt(numberStr, sourceBase);
+                    if (isNaN(decimalValue)) {
+                        throw new Error(`'${numberStr}' tidak valid untuk basis ${sourceBase}`);
+                    }
+                }
+                
+                // STEP 2: Konversi dari desimal ke basis tujuan dengan karakter custom
+                if (decimalValue === 0) {
+                    return { result: customChars[0] || '0', decimal: 0 };
+                }
+                
+                const targetBaseNum = targetBase;
+                const chars = customChars;
+                let result = '';
+                let num = decimalValue;
+                
+                while (num > 0) {
+                    const remainder = num % targetBaseNum;
+                    if (remainder >= chars.length) {
+                        throw new Error(`Nilai ${remainder} melebihi jumlah karakter custom (${chars.length})`);
+                    }
+                    result = chars[remainder] + result;
+                    num = Math.floor(num / targetBaseNum);
+                }
+                
+                return { result: result || (chars[0] || '0'), decimal: decimalValue };
+            }
+            
+            function validateAndConvert() {
+                infoBox.classList.add('hidden');
+                infoBox.classList.remove('error', 'success');
+                resultBox2.style.display = 'none';
+                
+                try {
+                    const sourceBase = parseInt(sourceBaseInput.value);
+                    const targetBase = parseInt(targetBaseInput.value);
+                    const numberStr = numberInput.value.trim();
+                    const customChars = parseCustomChars(customCharsInput.value);
+                    
+                    // Validasi
+                    if (!numberStr) {
+                        showError('Masukkan angka terlebih dahulu!');
+                        return;
+                    }
+                    
+                    if (isNaN(sourceBase) || sourceBase < 2) {
+                        showError('Basis sumber harus ≥ 2');
+                        return;
+                    }
+                    
+                    if (isNaN(targetBase) || targetBase < 2) {
+                        showError('Basis tujuan harus ≥ 2');
+                        return;
+                    }
+                    
+                    if (customChars.length === 0) {
+                        showError('Masukkan minimal 1 karakter custom!');
+                        return;
+                    }
+                    
+                    // Cek duplikat
+                    const uniqueChars = new Set(customChars);
+                    if (uniqueChars.size !== customChars.length) {
+                        showError('Karakter custom tidak boleh duplikat!');
+                        return;
+                    }
+                    
+                    updateCharCount();
+                    
+                    // 🔥 KONVERSI
+                    const { result, decimal } = convertNumber(numberStr, sourceBase, targetBase, customChars);
+                    
+                    // Simpan hasil untuk copy
+                    lastResult = result;
+                    
+                    // Tampilkan hasil utama
+                    resultValue.innerHTML = `<span class="highlight-text">${result}</span>`;
+                    
+                    // Tampilkan detail dengan desimal penuh (tanpa notasi ilmiah)
+                    let detailText = '';
+                    const isCustomInput = numberStr.split('').every(c => customChars.includes(c));
+                    
+                    // Format angka desimal penuh
+                    const decimalStr = decimal.toString();
+                    
+                    if (isCustomInput) {
+                        detailText = `📥 Input: ${numberStr} (basis ${sourceBase} custom)\n📤 Output: ${result} (basis ${targetBase} custom)\n📊 Nilai desimal: ${decimalStr}`;
+                    } else {
+                        detailText = `📥 Input: ${numberStr} (basis ${sourceBase})\n📤 Output: ${result} (basis ${targetBase} custom)\n📊 Nilai desimal: ${decimalStr}`;
+                    }
+                    
+                    lastDetail = detailText;
+                    resultValue2.textContent = detailText;
+                    resultBox2.style.display = 'block';
+                    
+                    // Info sukses
+                    showSuccess(`✅ Konversi berhasil! Basis ${sourceBase} → Basis ${targetBase}`);
+                    
+                } catch (error) {
+                    showError('❌ ' + error.message);
+                    lastResult = null;
+                    lastDetail = null;
+                }
+            }
+            
+            // Swap bases
+            function swapBases() {
+                const tempBase = sourceBaseInput.value;
+                sourceBaseInput.value = targetBaseInput.value;
+                targetBaseInput.value = tempBase;
+                
+                // Update direction
+                updateDirection();
+                validateAndConvert();
+            }
+            
+            function updateDirection() {
+                const from = sourceBaseInput.value || '?';
+                const to = targetBaseInput.value || '?';
+                directionIndicator.textContent = `⬇️ Basis ${from} → Basis ${to}`;
+            }
+            
+            function clearAll() {
+                numberInput.value = '';
+                resultValue.textContent = '-';
+                resultValue2.textContent = '-';
+                resultBox2.style.display = 'none';
+                infoBox.classList.add('hidden');
+                lastResult = null;
+                lastDetail = null;
+            }
+            
+            // 🔥 Contoh yang lebih beragam
+            function showExample() {
+                const examples = [
+                    { source: '10', target: '16', chars: '0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F', number: '255' },
+                    { source: '16', target: '10', chars: '0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F', number: 'FF' },
+                    { source: '10', target: '2', chars: '0,1', number: '42' },
+                    { source: '2', target: '10', chars: '0,1', number: '101010' },
+                ];
+                
+                // Pilih contoh secara bergiliran
+                const index = Math.floor(Math.random() * examples.length);
+                const ex = examples[index];
+                
+                sourceBaseInput.value = ex.source;
+                targetBaseInput.value = ex.target;
+                customCharsInput.value = ex.chars;
+                numberInput.value = ex.number;
+                
+                // Reset method ke comma
+                currentMethod = 'comma';
+                document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-method="comma"]').classList.add('active');
+                separatorHint.textContent = '💡 Pisahkan dengan koma (,). Contoh: 0,1,2,3,4,5,6,7,8,9';
+                
+                updateDirection();
+                updateCharCount();
+                validateAndConvert();
+                
+                showSuccess(`📝 Contoh: ${ex.number} (basis ${ex.source}) → basis ${ex.target}`);
+            }
+            
+            function showError(message) {
+                infoBox.textContent = message;
+                infoBox.className = 'info error';
+                infoBox.classList.remove('hidden');
+                resultValue.textContent = 'Error';
+                resultValue2.textContent = '-';
+                resultBox2.style.display = 'none';
+            }
+            
+            function showSuccess(message) {
+                infoBox.textContent = message;
+                infoBox.className = 'info success';
+                infoBox.classList.remove('hidden');
+            }
+            
+            // Copy functions
+            function copyText(text, buttonElement) {
+                if (!text) {
+                    showError('Tidak ada data untuk disalin!');
+                    return;
+                }
+                
+                // Gunakan navigator.clipboard jika tersedia
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showCopyFeedback(buttonElement);
+                    }).catch(() => {
+                        // Fallback
+                        fallbackCopy(text, buttonElement);
+                    });
+                } else {
+                    // Fallback untuk browser yang tidak support clipboard API
+                    fallbackCopy(text, buttonElement);
+                }
+            }
+            
+            function fallbackCopy(text, buttonElement) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyFeedback(buttonElement);
+                } catch (err) {
+                    showError('Gagal menyalin teks');
+                }
+                document.body.removeChild(textarea);
+            }
+            
+            function showCopyFeedback(buttonElement) {
+                buttonElement.textContent = '✅ Tersalin!';
+                buttonElement.classList.add('copied');
+                setTimeout(() => {
+                    buttonElement.textContent = '📋 Salin';
+                    buttonElement.classList.remove('copied');
+                }, 2000);
+            }
+            
+            // Event listeners untuk copy
+            copyResultBtn.addEventListener('click', function() {
+                if (lastResult) {
+                    copyText(lastResult, this);
+                } else {
+                    showError('Tidak ada hasil untuk disalin!');
+                }
+            });
+            
+            copyDetailBtn.addEventListener('click', function() {
+                if (lastDetail) {
+                    copyText(lastDetail, this);
+                } else {
+                    showError('Tidak ada detail untuk disalin!');
+                }
+            });
+            
+            // Event listeners
+            document.getElementById('convertBtn').addEventListener('click', validateAndConvert);
+            document.getElementById('swapBtn').addEventListener('click', swapBases);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('exampleBtn').addEventListener('click', showExample);
+            
+            numberInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') validateAndConvert();
+            });
+            
+            // Update direction on base change
+            sourceBaseInput.addEventListener('change', updateDirection);
+            targetBaseInput.addEventListener('change', updateDirection);
+            
+            // Auto-update char count
+            customCharsInput.addEventListener('input', function() {
+                const chars = parseCustomChars(this.value);
+                charCount.textContent = chars.length + ' karakter';
+            });
+            
+            // Initial setup
+            updateDirection();
+            setTimeout(showExample, 200);
+            
+        })();
+    </script>
+</body>
+</html>
