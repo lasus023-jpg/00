@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Pembagi Teks Per Baris</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --bg-result: #f8fafc;
+            --bg-btn-quick: #f1f4f9;
+            --bg-btn-quick-active: #3b82f6;
+            --bg-btn-secondary: #eef2f6;
+            --text-primary: #0b1b33;
+            --text-secondary: #1e293b;
+            --text-muted: #5e6f8d;
+            --text-light: #94a3b8;
+            --border-color: #dbe0e8;
+            --border-hover: #3b82f6;
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-focus: rgba(59,130,246,0.15);
+            --btn-primary-bg: #0b1b33;
+            --btn-primary-text: #ffffff;
+            --btn-primary-shadow: rgba(11,27,51,0.15);
+            --divider-color: #e9edf3;
+            --badge-bg: #dbe0e8;
+            --badge-text: #1e293b;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --bg-result: #0f172a;
+            --bg-btn-quick: #2d3748;
+            --bg-btn-quick-active: #3b82f6;
+            --bg-btn-secondary: #2d3748;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
+            --border-color: #2d3748;
+            --border-hover: #3b82f6;
+            --shadow-color: rgba(0,0,0,0.3);
+            --shadow-focus: rgba(59,130,246,0.25);
+            --btn-primary-bg: #3b82f6;
+            --btn-primary-text: #ffffff;
+            --btn-primary-shadow: rgba(59,130,246,0.25);
+            --divider-color: #2d3748;
+            --badge-bg: #2d3748;
+            --badge-text: #cbd5e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            transition: background 0.3s, color 0.3s;
+            color: var(--text-primary);
+        }
+
+        .app {
+            max-width: 480px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 28px;
+            box-shadow: 0 10px 40px var(--shadow-color);
+            padding: 24px 20px 32px;
+            transition: all 0.3s;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .theme-toggle {
+            background: var(--bg-btn-secondary);
+            border: none;
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 44px;
+            justify-content: center;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.92);
+        }
+
+        .theme-toggle span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .subhead {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            flex: 1 1 100%;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group label span {
+            background: var(--bg-btn-quick);
+            padding: 2px 10px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .input-group input[type="number"] {
+            flex: 2 1 120px;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 18px;
+            font-size: 17px;
+            font-weight: 500;
+            background: var(--bg-input);
+            transition: 0.2s;
+            width: 100%;
+            min-width: 80px;
+            color: var(--text-primary);
+        }
+
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: var(--border-hover);
+            box-shadow: 0 0 0 3px var(--shadow-focus);
+        }
+
+        .quick-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-btns button {
+            flex: 1 0 auto;
+            background: var(--bg-btn-quick);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 14px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: 0.15s;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            min-width: 60px;
+        }
+
+        .quick-btns button:active {
+            transform: scale(0.96);
+        }
+
+        .quick-btns button.active {
+            background: var(--bg-btn-quick-active);
+            color: white;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: 0.2s;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--border-hover);
+            box-shadow: 0 0 0 3px var(--shadow-focus);
+        }
+
+        textarea::placeholder {
+            color: var(--text-light);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 12px;
+            margin: 18px 0 22px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            flex: 2 1 160px;
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            border: none;
+            border-radius: 40px;
+            padding: 16px 18px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 12px var(--btn-primary-shadow);
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        .btn-secondary {
+            flex: 1 1 80px;
+            background: var(--bg-btn-secondary);
+            border: none;
+            border-radius: 40px;
+            padding: 16px 14px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.96);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .file-actions button,
+        .file-actions label {
+            flex: 1 1 80px;
+            background: var(--bg-btn-secondary);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 70px;
+        }
+
+        .file-actions button:active,
+        .file-actions label:active {
+            transform: scale(0.96);
+        }
+
+        .file-actions input[type="file"] {
+            display: none;
+        }
+
+        .result-container {
+            background: var(--bg-result);
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 6px;
+            border: 1px solid var(--border-color);
+            min-height: 70px;
+            transition: background 0.3s;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-header span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .result-header .count-badge {
+            background: var(--badge-bg);
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: var(--badge-text);
+        }
+
+        #outputText {
+            font-size: 16px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--text-primary);
+            font-family: "Menlo", "Monaco", "Courier New", monospace;
+            padding: 4px 2px;
+            min-height: 40px;
+            transition: color 0.3s;
+        }
+
+        .placeholder-text {
+            color: var(--text-light);
+            font-style: italic;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--divider-color);
+            margin: 18px 0 10px;
+            transition: border-color 0.3s;
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding-top: 6px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .footer-info button {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: 0.15s;
+        }
+
+        .footer-info button:active {
+            background: var(--bg-btn-secondary);
+        }
+
+        .step-indicator {
+            font-size: 14px;
+            color: var(--text-muted);
+            background: var(--bg-btn-quick);
+            padding: 2px 12px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 400px) {
+            .app { padding: 16px; }
+            .btn-primary { flex: 1 1 100%; }
+            .file-actions button,
+            .file-actions label { flex: 1 1 60px; font-size: 12px; padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app" role="main">
+    <div class="header-row">
+        <h1>✂️ Pembagi Baris</h1>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle tema">
+            <span id="themeIcon">🌙</span>
+            <span id="themeLabel">Gelap</span>
+        </button>
+    </div>
+    <div class="subhead">Atur panjang tiap baris &amp; bagi teks</div>
+
+    <!-- Input jumlah karakter -->
+    <div class="input-group">
+        <label>
+            Karakter per baris
+            <span id="charLimitDisplay">10</span>
+        </label>
+        <input type="number" id="charLimitInput" value="10" min="1" max="200" step="2" />
+    </div>
+
+    <!-- Tombol pintas kelipatan 2 -->
+    <div class="quick-btns" id="quickBtnContainer">
+        <button data-value="4">4</button>
+        <button data-value="6">6</button>
+        <button data-value="8">8</button>
+        <button data-value="10" class="active">10</button>
+        <button data-value="12">12</button>
+        <button data-value="16">16</button>
+        <button data-value="20">20</button>
+        <button data-value="30">30</button>
+    </div>
+
+    <!-- Textarea input -->
+    <textarea id="inputText" placeholder="Masukkan teks di sini…&#10;Contoh: Halo ini adalah contoh teks yang akan dibagi per baris."></textarea>
+
+    <!-- File actions -->
+    <div class="file-actions">
+        <label for="fileInput">📂 Upload</label>
+        <input type="file" id="fileInput" accept=".txt,.csv,.md,.json" />
+        <button id="downloadBtn">💾 Download</button>
+        <button id="loadStorageBtn">💾 Load</button>
+    </div>
+
+    <!-- Tombol aksi -->
+    <div class="action-row">
+        <button class="btn-primary" id="splitBtn">▶ Bagi</button>
+        <button class="btn-secondary" id="clearBtn">✕ Kosongkan</button>
+    </div>
+
+    <!-- Hasil -->
+    <div class="result-container">
+        <div class="result-header">
+            <span>📄 Hasil</span>
+            <span class="count-badge" id="lineCount">0 baris</span>
+        </div>
+        <div id="outputText" class="placeholder-text">Hasil akan muncul di sini</div>
+    </div>
+
+    <hr />
+
+    <div class="footer-info">
+        <span>⚡ Kelipatan 2 | <span id="currentStepDisplay">10</span> karakter</span>
+        <button id="copyBtn" aria-label="Salin hasil">📋 Salin</button>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<script>
+    (function() {
+        "use strict";
+
+        // DOM elements
+        const charLimitInput = document.getElementById('charLimitInput');
+        const charLimitDisplay = document.getElementById('charLimitDisplay');
+        const currentStepDisplay = document.getElementById('currentStepDisplay');
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const lineCount = document.getElementById('lineCount');
+        const splitBtn = document.getElementById('splitBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const quickBtns = document.querySelectorAll('#quickBtnContainer button');
+        const fileInput = document.getElementById('fileInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loadStorageBtn = document.getElementById('loadStorageBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
+        const toast = document.getElementById('toast');
+
+        // State
+        let currentLimit = 10;
+        let toastTimeout = null;
+
+        // --- LocalStorage keys ---
+        const STORAGE_KEY_TEXT = 'textSplitter_text';
+        const STORAGE_KEY_LIMIT = 'textSplitter_limit';
+        const STORAGE_KEY_THEME = 'textSplitter_theme';
+
+        // --- Toast ---
+        function showToast(message, duration = 2000) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // --- Theme ---
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeLabel.textContent = 'Terang';
+                localStorage.setItem(STORAGE_KEY_THEME, 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeLabel.textContent = 'Gelap';
+                localStorage.setItem(STORAGE_KEY_THEME, 'light');
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        // Load theme from localStorage
+        function loadTheme() {
+            const saved = localStorage.getItem(STORAGE_KEY_THEME);
+            if (saved) {
+                setTheme(saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                setTheme('dark');
+            }
+        }
+
+        // --- Helper: split teks per baris ---
+        function splitTextIntoLines(text, limit) {
+            if (!text || text.trim() === '') {
+                return [];
+            }
+            const clean = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            const lines = [];
+            let currentLine = '';
+            for (let i = 0; i < clean.length; i++) {
+                const ch = clean[i];
+                if (ch === '\n') {
+                    if (currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = '';
+                    } else {
+                        lines.push('');
+                    }
+                    continue;
+                }
+                currentLine += ch;
+                if (currentLine.length >= limit) {
+                    lines.push(currentLine);
+                    currentLine = '';
+                }
+            }
+            if (currentLine.length > 0) {
+                lines.push(currentLine);
+            }
+            return lines;
+        }
+
+        // --- Render hasil ---
+        function renderResult() {
+            const text = inputText.value;
+            const limit = currentLimit;
+
+            if (!text || text.trim() === '') {
+                outputText.textContent = 'Teks kosong — masukkan teks di atas.';
+                outputText.className = 'placeholder-text';
+                lineCount.textContent = '0 baris';
+                return;
+            }
+
+            const lines = splitTextIntoLines(text, limit);
+            if (lines.length === 0) {
+                outputText.textContent = 'Tidak ada baris yang dihasilkan.';
+                outputText.className = 'placeholder-text';
+                lineCount.textContent = '0 baris';
+                return;
+            }
+
+            const resultString = lines.join('\n');
+            outputText.textContent = resultString;
+            outputText.className = '';
+            lineCount.textContent = lines.length + ' baris';
+        }
+
+        // --- Update UI dari limit ---
+        function updateLimitDisplay() {
+            charLimitDisplay.textContent = currentLimit;
+            currentStepDisplay.textContent = currentLimit;
+            quickBtns.forEach(btn => {
+                const val = parseInt(btn.dataset.value, 10);
+                btn.classList.toggle('active', val === currentLimit);
+            });
+            charLimitInput.value = currentLimit;
+        }
+
+        // --- Set limit baru ---
+        function setLimit(newLimit) {
+            let val = Number(newLimit);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 200) val = 200;
+            if (val < 2) val = 2;
+            val = Math.floor(val / 2) * 2;
+            currentLimit = val;
+            updateLimitDisplay();
+            // Simpan ke localStorage
+            localStorage.setItem(STORAGE_KEY_LIMIT, currentLimit);
+            renderResult();
+        }
+
+        // --- Save to localStorage ---
+        function saveToLocalStorage() {
+            const text = inputText.value;
+            localStorage.setItem(STORAGE_KEY_TEXT, text);
+            showToast('💾 Tersimpan ke browser');
+        }
+
+        // --- Load from localStorage ---
+        function loadFromLocalStorage() {
+            const savedText = localStorage.getItem(STORAGE_KEY_TEXT);
+            const savedLimit = localStorage.getItem(STORAGE_KEY_LIMIT);
+            
+            if (savedLimit) {
+                setLimit(parseInt(savedLimit, 10));
+            }
+            
+            if (savedText) {
+                inputText.value = savedText;
+                renderResult();
+                showToast('📂 Data dimuat dari browser');
+            } else {
+                showToast('⚠️ Tidak ada data tersimpan');
+            }
+        }
+
+        // --- Upload file ---
+        function handleFileUpload(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                inputText.value = content;
+                renderResult();
+                showToast('✅ File berhasil diupload: ' + file.name);
+                // Simpan otomatis
+                localStorage.setItem(STORAGE_KEY_TEXT, content);
+            };
+            reader.onerror = function() {
+                showToast('❌ Gagal membaca file');
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Download file ---
+        function downloadResult() {
+            const content = outputText.textContent;
+            if (!content || content === 'Hasil akan muncul di sini' || 
+                content === 'Teks kosong — masukkan teks di atas.' || 
+                content === 'Tidak ada baris yang dihasilkan.') {
+                showToast('⚠️ Tidak ada hasil untuk diunduh');
+                return;
+            }
+            
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hasil_pembagi_baris.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('💾 File berhasil diunduh');
+        }
+
+        // --- Event listeners ---
+
+        // Theme toggle
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Input number
+        charLimitInput.addEventListener('input', function(e) {
+            let raw = parseInt(this.value, 10);
+            if (isNaN(raw) || raw < 1) {
+                // biarkan
+            }
+            setLimit(raw);
+        });
+
+        // Tombol pintas
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const val = parseInt(this.dataset.value, 10);
+                if (!isNaN(val) && val > 0) {
+                    setLimit(val);
+                }
+            });
+        });
+
+        // Tombol Bagi
+        splitBtn.addEventListener('click', function(e) {
+            renderResult();
+            saveToLocalStorage();
+        });
+
+        // Tombol Kosongkan
+        clearBtn.addEventListener('click', function(e) {
+            inputText.value = '';
+            outputText.textContent = 'Hasil akan muncul di sini';
+            outputText.className = 'placeholder-text';
+            lineCount.textContent = '0 baris';
+            localStorage.removeItem(STORAGE_KEY_TEXT);
+            showToast('🗑️ Data dihapus');
+        });
+
+        // Tombol Salin
+        copyBtn.addEventListener('click', function(e) {
+            const textToCopy = outputText.textContent;
+            if (!textToCopy || textToCopy === 'Hasil akan muncul di sini' || 
+                textToCopy === 'Teks kosong — masukkan teks di atas.' || 
+                textToCopy === 'Tidak ada baris yang dihasilkan.') {
+                showToast('⚠️ Tidak ada teks untuk disalin', 1500);
+                return;
+            }
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast('✅ Tersalin ke clipboard');
+                }).catch(() => {
+                    fallbackCopy(textToCopy);
+                });
+            } else {
+                fallbackCopy(textToCopy);
+            }
+        });
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ Tersalin ke clipboard');
+            } catch (e) {
+                showToast('❌ Gagal menyalin');
+            }
+            ta.remove();
+        }
+
+        // File upload
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                handleFileUpload(this.files[0]);
+            }
+            this.value = ''; // reset agar bisa upload file yang sama
+        });
+
+        // Download
+        downloadBtn.addEventListener('click', downloadResult);
+
+        // Load from storage
+        loadStorageBtn.addEventListener('click', loadFromLocalStorage);
+
+        // Keyboard shortcut: Ctrl+Enter
+        inputText.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                renderResult();
+                saveToLocalStorage();
+            }
+        });
+
+        // Auto-save on input change (debounced)
+        let saveTimeout;
+        inputText.addEventListener('input', function() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                localStorage.setItem(STORAGE_KEY_TEXT, inputText.value);
+            }, 1000);
+        });
+
+        // --- Inisialisasi ---
+        function init() {
+            loadTheme();
+            
+            // Load saved limit
+            const savedLimit = localStorage.getItem(STORAGE_KEY_LIMIT);
+            if (savedLimit) {
+                setLimit(parseInt(savedLimit, 10));
+            } else {
+                setLimit(10);
+            }
+            
+            // Load saved text
+            const savedText = localStorage.getItem(STORAGE_KEY_TEXT);
+            if (savedText) {
+                inputText.value = savedText;
+                renderResult();
+            }
+            
+            console.log('🚀 Aplikasi siap!');
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
