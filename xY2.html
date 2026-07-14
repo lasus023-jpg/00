@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koordinat Encode - Quad Compression 4×</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            border-radius: 32px;
+            padding: 40px 35px;
+            max-width: 960px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        }
+        h1 {
+            color: #fff;
+            font-weight: 300;
+            font-size: 2rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 0.85rem;
+            color: #8888bb;
+            font-weight: 300;
+        }
+        .subtitle {
+            color: #9999cc;
+            border-left: 3px solid #6c5bb0;
+            padding-left: 16px;
+            margin-bottom: 28px;
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 700px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+        .section {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 20px;
+            padding: 22px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .section-title {
+            color: #b8b0e0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .field-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            color: #aaaadd;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.4);
+            color: #f0ecff;
+            font-size: 0.95rem;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            transition: 0.2s;
+        }
+        select {
+            appearance: none;
+            cursor: pointer;
+        }
+        select option {
+            background: #1a1a3e;
+            color: #f0ecff;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #7c6bc0;
+            background: rgba(0, 0, 0, 0.55);
+            box-shadow: 0 0 0 3px rgba(108, 91, 176, 0.15);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            background: #6c5bb0;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(108, 91, 176, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #7e6ec9;
+            box-shadow: 0 8px 24px rgba(108, 91, 176, 0.4);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-outline {
+            background: transparent;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #7c6bc0;
+            box-shadow: none;
+            transform: none;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .result-box {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            border-left: 3px solid #6c5bb0;
+            min-height: 50px;
+            word-break: break-all;
+        }
+        .result-box .label {
+            color: #8888bb;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .result-box .value {
+            color: #f0ecff;
+            font-size: 1.6rem;
+            font-weight: 500;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .result-box .value.small {
+            font-size: 1rem;
+        }
+        .result-box .value.quad-output {
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+        }
+        .stat {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #8888bb;
+        }
+        .stat span {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .stat .num {
+            color: #d0c8f0;
+            font-weight: 600;
+        }
+        .stat .highlight {
+            color: #7c6bc0;
+            font-weight: 700;
+        }
+        .info-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-top: 14px;
+            color: #aaaadd;
+            font-size: 0.85rem;
+        }
+        .info-box strong {
+            color: #d0c8f0;
+        }
+        .info-box .warn {
+            color: #f0a070;
+        }
+        .char-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .char-preview .char-item {
+            background: rgba(108, 91, 176, 0.15);
+            border: 1px solid rgba(108, 91, 176, 0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: #d0c8f0;
+        }
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #8888bb;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.15s;
+            margin-left: 8px;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .footer {
+            margin-top: 28px;
+            color: #555577;
+            font-size: 0.8rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(108, 91, 176, 0.2);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #9999cc;
+            margin-left: 6px;
+        }
+        .badge-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+        .badge-warn {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffd54f;
+        }
+        .mode-indicator {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            background: rgba(108, 91, 176, 0.15);
+            color: #b8b0e0;
+        }
+        .input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .input-group input {
+            flex: 1;
+        }
+        .input-group .btn-sm {
+            flex-shrink: 0;
+        }
+        .range-info {
+            font-size: 0.7rem;
+            color: #666699;
+            margin-top: 4px;
+        }
+        .range-info code {
+            background: rgba(0,0,0,0.3);
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #9999cc;
+        }
+        .demo-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .demo-btn {
+            background: rgba(108, 91, 176, 0.1);
+            border: 1px solid rgba(108, 91, 176, 0.15);
+            border-radius: 20px;
+            padding: 4px 14px;
+            color: #8888bb;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .demo-btn:hover {
+            background: rgba(108, 91, 176, 0.2);
+            color: #d0c8f0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        🗺️ Quad Encode
+        <small>4 Digit → 1 Karakter</small>
+        <span class="badge badge-success">Kompresi 75%</span>
+    </h1>
+    <div class="subtitle">
+        Konversi deret angka menjadi karakter CJK (Chinese/Japanese/Korean) · Full reversibel
+    </div>
+
+    <div class="grid-2col">
+        <!-- Panel Kiri: Encode -->
+        <div class="section">
+            <div class="section-title">
+                🔐 Encode
+                <span class="badge">Angka → CJK</span>
+            </div>
+
+            <div class="field-group">
+                <label>📥 Input (deret angka)</label>
+                <input type="text" id="encodeInput" value="1234567890" placeholder="Contoh: 1234567890">
+                <div class="demo-row">
+                    <span class="demo-btn" data-demo="1234567890">1234567890</span>
+                    <span class="demo-btn" data-demo="3141592653589793">π 16 digit</span>
+                    <span class="demo-btn" data-demo="9999">9999</span>
+                    <span class="demo-btn" data-demo="123">123 (auto pad)</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>🔢 Mode</label>
+                <select id="encodeMode">
+                    <option value="quad">⚡ Quad (4 digit → 1 karakter) ★</option>
+                    <option value="pair">Pair (2 digit → 1 karakter)</option>
+                    <option value="single">Single (1 digit → 1 karakter)</option>
+                </select>
+                <div class="range-info" id="modeInfo">
+                    <span id="modeDesc">Setiap 4 digit dikonversi ke 1 karakter CJK (range 0x4E00-0x4E0F)</span>
+                </div>
+            </div>
+
+            <div class="field-group" id="charsetField">
+                <label>🎨 Karakter Custom (opsional, pisahkan koma)</label>
+                <input type="text" id="customChars" placeholder="Kosongkan untuk pakai CJK default" 
+                       value="">
+                <div class="range-info">Kosongkan = pakai 10.000 karakter CJK (0x4E00-0x4E0F). Isi custom untuk override.</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="encodeBtn">🚀 Encode</button>
+                <button class="btn btn-outline btn-sm" id="clearEncode">✕ Clear</button>
+            </div>
+
+            <div class="result-box">
+                <div class="label">Hasil Encode</div>
+                <div class="value quad-output" id="encodeResult">—</div>
+                <button class="copy-btn" id="copyEncodeResult">📋 Salin</button>
+            </div>
+
+            <div class="stat">
+                <span>Input: <span class="num" id="encInLen">0</span> digit</span>
+                <span>Output: <span class="num" id="encOutLen">0</span> karakter</span>
+                <span>Kompresi: <span class="num highlight" id="encRatio">-</span>×</span>
+            </div>
+
+            <div class="info-box" id="encodeInfo">
+                <strong>ℹ️</strong> Masukkan deret angka, pilih mode Quad untuk kompresi 4×.
+            </div>
+        </div>
+
+        <!-- Panel Kanan: Decode -->
+        <div class="section">
+            <div class="section-title">
+                🔓 Decode
+                <span class="badge">CJK → Angka</span>
+            </div>
+
+            <div class="field-group">
+                <label>📥 Input (karakter hasil encode)</label>
+                <input type="text" id="decodeInput" value="䷀䷁䷂" placeholder="Contoh: ䷀䷁䷂">
+                <div class="demo-row">
+                    <span class="demo-btn" data-demo-decode="䷀䷁䷂">䷀䷁䷂</span>
+                    <span class="demo-btn" data-demo-decode="一丁丂七丄">一丁丂七丄</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>🔢 Mode (sama seperti saat encode)</label>
+                <select id="decodeMode">
+                    <option value="quad">⚡ Quad (4 digit → 1 karakter)</option>
+                    <option value="pair">Pair (2 digit → 1 karakter)</option>
+                    <option value="single">Single (1 digit → 1 karakter)</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>🎨 Karakter Custom (sama dengan saat encode)</label>
+                <input type="text" id="decodeCustomChars" placeholder="Kosongkan jika pakai CJK default" value="">
+                <div class="range-info">Harus sama persis dengan charset saat encode.</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="decodeBtn">🔓 Decode</button>
+                <button class="btn btn-outline btn-sm" id="clearDecode">✕ Clear</button>
+            </div>
+
+            <div class="result-box">
+                <div class="label">Hasil Decode</div>
+                <div class="value" id="decodeResult">—</div>
+                <button class="copy-btn" id="copyDecodeResult">📋 Salin</button>
+            </div>
+
+            <div class="stat">
+                <span>Input: <span class="num" id="decInLen">0</span> karakter</span>
+                <span>Output: <span class="num" id="decOutLen">0</span> digit</span>
+                <span>Ekspansi: <span class="num highlight" id="decRatio">-</span>×</span>
+            </div>
+
+            <div class="info-box" id="decodeInfo">
+                <strong>ℹ️</strong> Tempel karakter hasil encode, pilih mode yang sama, dapatkan angka asli.
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Karakter -->
+    <div style="margin-top:20px;background:rgba(0,0,0,0.15);border-radius:16px;padding:14px 20px;">
+        <div style="color:#8888bb;font-size:0.8rem;margin-bottom:6px;">📋 Preview karakter pertama (CJK range 0x4E00-0x4E0F):</div>
+        <div class="char-preview" id="charPreview"></div>
+    </div>
+
+    <div class="footer">
+        ⚡ Quad mode: 4 digit → 1 karakter CJK · Kompresi 4× · Full reversibel · Support 10.000 karakter
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ---------- CORE LOGIC ----------
+        
+        // Default CJK charset: 10,000 karakter (0x4E00 - 0x4E00 + 9999)
+        function getDefaultCJKCharset() {
+            let s = '';
+            for (let i = 0; i < 10000; i++) {
+                s += String.fromCharCode(0x4E00 + i);
+            }
+            return s;
+        }
+
+        function getCharset(customCharsStr) {
+            if (!customCharsStr || customCharsStr.trim() === '') {
+                return getDefaultCJKCharset();
+            }
+            // Parse custom characters
+            const chars = customCharsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            const unique = [...new Set(chars)];
+            return unique.join('');
+        }
+
+        function getCharMap(charset) {
+            const map = {};
+            for (let i = 0; i < charset.length; i++) {
+                map[charset[i]] = i;
+            }
+            return map;
+        }
+
+        // ---------- ENCODE FUNCTIONS ----------
+        
+        function encodeQuad(digits, charset) {
+            // Bersihkan input: ambil hanya digit
+            const clean = digits.replace(/\D/g, '');
+            if (clean.length === 0) {
+                throw new Error('Input harus mengandung angka');
+            }
+            
+            // Padding ke kelipatan 4
+            const padLength = Math.ceil(clean.length / 4) * 4;
+            const padded = clean.padStart(padLength, '0');
+            
+            const result = [];
+            const maxIdx = charset.length - 1;
+            
+            for (let i = 0; i < padded.length; i += 4) {
+                const chunk = padded.substr(i, 4);
+                let idx = parseInt(chunk, 10);
+                
+                // Jika idx melebihi charset, wrap dengan modulo
+                if (idx > maxIdx) {
+                    idx = idx % (maxIdx + 1);
+                }
+                
+                result.push(charset[idx] || charset[0]);
+            }
+            
+            return {
+                encoded: result.join(''),
+                originalLength: clean.length,
+                encodedLength: result.length,
+                paddedLength: padded.length,
+                chunks: padded.match(/.{4}/g) || []
+            };
+        }
+
+        function encodePair(digits, charset) {
+            const clean = digits.replace(/\D/g, '');
+            if (clean.length === 0) {
+                throw new Error('Input harus mengandung angka');
+            }
+            
+            const padLength = Math.ceil(clean.length / 2) * 2;
+            const padded = clean.padStart(padLength, '0');
+            const result = [];
+            const maxIdx = charset.length - 1;
+            
+            for (let i = 0; i < padded.length; i += 2) {
+                const chunk = padded.substr(i, 2);
+                let idx = parseInt(chunk, 10);
+                if (idx > maxIdx) {
+                    idx = idx % (maxIdx + 1);
+                }
+                result.push(charset[idx] || charset[0]);
+            }
+            
+            return {
+                encoded: result.join(''),
+                originalLength: clean.length,
+                encodedLength: result.length,
+                paddedLength: padded.length,
+                chunks: padded.match(/.{2}/g) || []
+            };
+        }
+
+        function encodeSingle(digits, charset) {
+            const clean = digits.replace(/\D/g, '');
+            if (clean.length === 0) {
+                throw new Error('Input harus mengandung angka');
+            }
+            
+            const result = [];
+            const maxIdx = charset.length - 1;
+            
+            for (const ch of clean) {
+                let idx = parseInt(ch, 10);
+                if (idx > maxIdx) {
+                    idx = idx % (maxIdx + 1);
+                }
+                result.push(charset[idx] || charset[0]);
+            }
+            
+            return {
+                encoded: result.join(''),
+                originalLength: clean.length,
+                encodedLength: result.length,
+                paddedLength: clean.length,
+                chunks: clean.split('')
+            };
+        }
+
+        function encodeCoordinates(digits, mode, charset) {
+            switch(mode) {
+                case 'quad': return encodeQuad(digits, charset);
+                case 'pair': return encodePair(digits, charset);
+                case 'single': return encodeSingle(digits, charset);
+                default: throw new Error('Mode tidak dikenal: ' + mode);
+            }
+        }
+
+        // ---------- DECODE FUNCTIONS ----------
+        
+        function decodeQuad(encodedStr, charset) {
+            const charMap = getCharMap(charset);
+            const chars = [...encodedStr];
+            const result = [];
+            
+            for (const ch of chars) {
+                const idx = charMap[ch];
+                if (idx === undefined) {
+                    throw new Error(`Karakter "${ch}" tidak dikenal dalam charset (kode: ${ch.charCodeAt(0).toString(16)})`);
+                }
+                const padded = idx.toString().padStart(4, '0');
+                result.push(padded);
+            }
+            
+            const raw = result.join('');
+            // Hapus leading zero
+            const trimmed = raw.replace(/^0+/, '');
+            return {
+                decoded: trimmed || '0',
+                originalLength: encodedStr.length,
+                decodedLength: trimmed.length || 1,
+                raw: raw
+            };
+        }
+
+        function decodePair(encodedStr, charset) {
+            const charMap = getCharMap(charset);
+            const chars = [...encodedStr];
+            const result = [];
+            
+            for (const ch of chars) {
+                const idx = charMap[ch];
+                if (idx === undefined) {
+                    throw new Error(`Karakter "${ch}" tidak dikenal dalam charset`);
+                }
+                const padded = idx.toString().padStart(2, '0');
+                result.push(padded);
+            }
+            
+            const raw = result.join('');
+            const trimmed = raw.replace(/^0+/, '');
+            return {
+                decoded: trimmed || '0',
+                originalLength: encodedStr.length,
+                decodedLength: trimmed.length || 1,
+                raw: raw
+            };
+        }
+
+        function decodeSingle(encodedStr, charset) {
+            const charMap = getCharMap(charset);
+            const chars = [...encodedStr];
+            const result = [];
+            
+            for (const ch of chars) {
+                const idx = charMap[ch];
+                if (idx === undefined) {
+                    throw new Error(`Karakter "${ch}" tidak dikenal dalam charset`);
+                }
+                result.push(idx.toString());
+            }
+            
+            const raw = result.join('');
+            const trimmed = raw.replace(/^0+/, '');
+            return {
+                decoded: trimmed || '0',
+                originalLength: encodedStr.length,
+                decodedLength: trimmed.length || 1,
+                raw: raw
+            };
+        }
+
+        function decodeCoordinates(encodedStr, mode, charset) {
+            switch(mode) {
+                case 'quad': return decodeQuad(encodedStr, charset);
+                case 'pair': return decodePair(encodedStr, charset);
+                case 'single': return decodeSingle(encodedStr, charset);
+                default: throw new Error('Mode tidak dikenal: ' + mode);
+            }
+        }
+
+        // ---------- UI ELEMENTS ----------
+        const encodeInput = document.getElementById('encodeInput');
+        const encodeMode = document.getElementById('encodeMode');
+        const customChars = document.getElementById('customChars');
+        const encodeBtn = document.getElementById('encodeBtn');
+        const clearEncode = document.getElementById('clearEncode');
+        const encodeResult = document.getElementById('encodeResult');
+        const copyEncodeResult = document.getElementById('copyEncodeResult');
+        const encInLen = document.getElementById('encInLen');
+        const encOutLen = document.getElementById('encOutLen');
+        const encRatio = document.getElementById('encRatio');
+        const encodeInfo = document.getElementById('encodeInfo');
+        const modeDesc = document.getElementById('modeDesc');
+        const charsetField = document.getElementById('charsetField');
+
+        const decodeInput = document.getElementById('decodeInput');
+        const decodeMode = document.getElementById('decodeMode');
+        const decodeCustomChars = document.getElementById('decodeCustomChars');
+        const decodeBtn = document.getElementById('decodeBtn');
+        const clearDecode = document.getElementById('clearDecode');
+        const decodeResult = document.getElementById('decodeResult');
+        const copyDecodeResult = document.getElementById('copyDecodeResult');
+        const decInLen = document.getElementById('decInLen');
+        const decOutLen = document.getElementById('decOutLen');
+        const decRatio = document.getElementById('decRatio');
+        const decodeInfo = document.getElementById('decodeInfo');
+
+        const charPreview = document.getElementById('charPreview');
+
+        // Demo buttons
+        document.querySelectorAll('[data-demo]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                encodeInput.value = this.dataset.demo;
+                doEncode();
+            });
+        });
+
+        document.querySelectorAll('[data-demo-decode]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                decodeInput.value = this.dataset.demoDecode;
+                doDecode();
+            });
+        });
+
+        // ---------- FUNCTIONS ----------
+        function updateModeInfo() {
+            const mode = encodeMode.value;
+            const descs = {
+                'quad': 'Setiap 4 digit → 1 karakter CJK. Kompresi 4×. Support 10.000 karakter.',
+                'pair': 'Setiap 2 digit → 1 karakter. Kompresi 2×. Support 100 karakter.',
+                'single': 'Setiap 1 digit → 1 karakter. Tanpa kompresi (1×).'
+            };
+            modeDesc.textContent = descs[mode] || '';
+            
+            // Sembunyikan custom chars untuk quad karena pakai CJK default
+            if (mode === 'quad') {
+                charsetField.style.display = 'block';
+            } else {
+                charsetField.style.display = 'block';
+            }
+        }
+
+        function updateCharPreview(charsetStr) {
+            const chars = [...charsetStr];
+            let html = '';
+            const maxShow = 40;
+            const show = Math.min(chars.length, maxShow);
+            for (let i = 0; i < show; i++) {
+                const ch = chars[i];
+                const code = ch.charCodeAt(0).toString(16).toUpperCase();
+                html += `<span class="char-item" title="U+${code.padStart(4, '0')}">${ch}</span>`;
+            }
+            if (chars.length > maxShow) {
+                html += `<span class="char-item">… +${chars.length - maxShow} lagi</span>`;
+            }
+            charPreview.innerHTML = html || '<span style="color:#555577;">Tidak ada karakter</span>';
+        }
+
+        function getCharsetFromInput(inputEl) {
+            const val = inputEl.value;
+            if (val && val.trim() !== '') {
+                return getCharset(val);
+            }
+            // Default: CJK
+            return getDefaultCJKCharset();
+        }
+
+        function doEncode() {
+            try {
+                const input = encodeInput.value;
+                const mode = encodeMode.value;
+                const charset = getCharsetFromInput(customChars);
+
+                if (charset.length === 0) {
+                    encodeInfo.innerHTML = '<strong>⚠️</strong> Tidak ada karakter yang valid.';
+                    return;
+                }
+
+                const result = encodeCoordinates(input, mode, charset);
+                encodeResult.textContent = result.encoded;
+                encInLen.textContent = result.originalLength;
+                encOutLen.textContent = result.encodedLength;
+                
+                const ratio = result.originalLength > 0 ? (result.originalLength / result.encodedLength).toFixed(2) : '∞';
+                encRatio.textContent = ratio;
+
+                const chunkInfo = result.chunks ? result.chunks.join(' ') : '';
+                encodeInfo.innerHTML = `
+                    <strong>✅ Sukses!</strong> 
+                    ${result.originalLength} digit → ${result.encodedLength} karakter 
+                    <span class="badge badge-success">${ratio}× kompresi</span>
+                    <br><span style="font-size:0.8rem;color:#8888bb;">Chunk: ${chunkInfo}</span>
+                `;
+
+                updateCharPreview(charset);
+
+            } catch (e) {
+                encodeInfo.innerHTML = `<strong>❌ Error:</strong> ${e.message}`;
+                encodeResult.textContent = 'Error';
+            }
+        }
+
+        function doDecode() {
+            try {
+                const input = decodeInput.value;
+                const mode = decodeMode.value;
+                const charset = getCharsetFromInput(decodeCustomChars);
+
+                if (charset.length === 0) {
+                    decodeInfo.innerHTML = '<strong>⚠️</strong> Tidak ada karakter yang valid.';
+                    return;
+                }
+
+                const result = decodeCoordinates(input, mode, charset);
+                decodeResult.textContent = result.decoded;
+                decInLen.textContent = result.originalLength;
+                decOutLen.textContent = result.decodedLength;
+                
+                const ratio = result.originalLength > 0 ? (result.decodedLength / result.originalLength).toFixed(2) : '-';
+                decRatio.textContent = ratio;
+
+                decodeInfo.innerHTML = `
+                    <strong>✅ Sukses!</strong> 
+                    ${result.originalLength} karakter → ${result.decodedLength} digit 
+                    <span class="badge">${ratio}× ekspansi</span>
+                    <br><span style="font-size:0.8rem;color:#8888bb;">Raw: ${result.raw || '-'}</span>
+                `;
+
+                updateCharPreview(charset);
+
+            } catch (e) {
+                decodeInfo.innerHTML = `<strong>❌ Error:</strong> ${e.message}`;
+                decodeResult.textContent = 'Error';
+            }
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        encodeBtn.addEventListener('click', doEncode);
+        decodeBtn.addEventListener('click', doDecode);
+
+        encodeMode.addEventListener('change', updateModeInfo);
+
+        clearEncode.addEventListener('click', function() {
+            encodeInput.value = '';
+            encodeResult.textContent = '—';
+            encInLen.textContent = '0';
+            encOutLen.textContent = '0';
+            encRatio.textContent = '-';
+            encodeInfo.innerHTML = '<strong>🧹</strong> Direset.';
+        });
+
+        clearDecode.addEventListener('click', function() {
+            decodeInput.value = '';
+            decodeResult.textContent = '—';
+            decInLen.textContent = '0';
+            decOutLen.textContent = '0';
+            decRatio.textContent = '-';
+            decodeInfo.innerHTML = '<strong>🧹</strong> Direset.';
+        });
+
+        copyEncodeResult.addEventListener('click', function() {
+            const text = encodeResult.textContent;
+            if (text && text !== '—' && text !== 'Error') {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyEncodeResult.textContent = '✅ Disalin!';
+                    setTimeout(() => copyEncodeResult.textContent = '📋 Salin', 1500);
+                }).catch(() => alert('Salin manual: ' + text));
+            }
+        });
+
+        copyDecodeResult.addEventListener('click', function() {
+            const text = decodeResult.textContent;
+            if (text && text !== '—' && text !== 'Error') {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyDecodeResult.textContent = '✅ Disalin!';
+                    setTimeout(() => copyDecodeResult.textContent = '📋 Salin', 1500);
+                }).catch(() => alert('Salin manual: ' + text));
+            }
+        });
+
+        // Sync custom chars
+        customChars.addEventListener('input', function() {
+            decodeCustomChars.value = this.value;
+            const charset = getCharsetFromInput(this);
+            updateCharPreview(charset);
+        });
+
+        decodeCustomChars.addEventListener('input', function() {
+            customChars.value = this.value;
+            const charset = getCharsetFromInput(this);
+            updateCharPreview(charset);
+        });
+
+        // Auto-update stat
+        encodeInput.addEventListener('input', function() {
+            const digits = this.value.replace(/\D/g, '');
+            encInLen.textContent = digits.length;
+        });
+
+        decodeInput.addEventListener('input', function() {
+            decInLen.textContent = this.value.length;
+        });
+
+        // ---------- INIT ----------
+        updateModeInfo();
+        const defaultCharset = getDefaultCJKCharset();
+        updateCharPreview(defaultCharset);
+
+        // Auto-encode default value
+        setTimeout(doEncode, 150);
+        setTimeout(doDecode, 300);
+
+        console.log('🗺️ Quad Encode siap digunakan!');
+        console.log('💡 Mode Quad: 4 digit → 1 karakter CJK (kompresi 75%)');
+        console.log('💡 Range CJK: 0x4E00 - 0x4E0F (10.000 karakter)');
+
+    })();
+</script>
+</body>
+</html>
